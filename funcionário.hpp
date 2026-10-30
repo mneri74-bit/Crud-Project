@@ -19,7 +19,7 @@ class funcionario : public virtual pessoa {
         
 
     public:
-        funcionario(string n,string g, int i, float al, float p, string cpf, int sal, float rat, int dia, int mes, int ano): pessoa(n,g,  i, al, p, cpf){
+        funcionario(string n,bool g, int i, float al, float p, string cpf, int sal, float rat, int dia, int mes, int ano): pessoa(n,g,  i, al, p, cpf){
             salario=sal;
             rating=rat;
             datadecontratacao.dia=dia; 
