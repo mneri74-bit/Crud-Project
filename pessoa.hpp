@@ -2,13 +2,14 @@
 #define pessoa_h
 #include <string>
 #include <iostream>
-#include<fstream>
+#include <fstream>
+#include <cstdlib>
 #include <windows.h>
 using namespace std;
 class pessoa {
     protected:
         char tipo;
-        string genero;
+        bool genero;
         int idade;
         string nome, CPF;
         float altura, peso;
@@ -26,7 +27,7 @@ class pessoa {
             cout << "comida boa!, espero que eu nao engorde\n";
             Sleep(500);
             if(rand() % 2) {
-            cout << nome <<"ganhou peso\n";
+            cout << nome <<" ganhou peso\n";
             peso += 0.1f;}   
         }
         char type(){
@@ -39,10 +40,7 @@ class pessoa {
             cout << "Pessoa - " << nome << " - CPF: " << CPF << "\nIdade: " << idade << "|| Sexo: ";
             if(genero) cout << "M"; else{ cout << "F"; }
             cout << "\nAltura: " << altura << " || Peso: " << peso << endl;
-            cout << "Salario: " << salario << " || Rating: " << rating << endl;
-            cout << "Data de contratacao: ";
-            datadecontratacao.mostrar();
-            cout << endl;;
+        }
 };
 
 #endif
