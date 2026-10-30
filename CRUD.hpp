@@ -12,8 +12,8 @@
 #include  <fstream>
 using namespace std;
 /*1. Inserir: cadastrar um novo registro.
-2. Listar todos: exibir todos os registros cadastrados.
-3. Exibir um: pesquisar e exibir um registro.
+2. Listar todos: exibir todos os registros cadastrados. x
+3. Exibir um: pesquisar e exibir um registro.x
 4. Alterar: pesquisar e modificar um registro.
 5. Remover: pesquisar e excluir um registro.
 6. Exibir relatório: apresentar um resumo dos dados.
@@ -24,6 +24,7 @@ class crud{
     public:
         fstream arquivo;
         static vector<pessoa*> povo;
+        
         crud(): arquivo("registro.txt", ios::in){
     if (!arquivo.is_open()) {
         cout << "Erro ao abrir o arquivo para leitura!" << endl;
@@ -74,10 +75,61 @@ class crud{
                 cout<< povo[i]->nom()<< endl;
             }
         }
+        
+        void add(){
+            bool tipo;
+            cout<< "Qual tipo de cadastro você vai querer fazer?\n0-Cliente 1-Funcionário";
+            cin>>  tipo;
+            char barra;
+            string nome, CPF;
+            bool genero;
+            int idade;
+            float altura, peso;
+            if (tipo){               
+                int salario, dia, mes, ano;
+                float rating;
+                cout<< "Digite o nome"<< endl;
+                getline(cin, nome);
+                cout<< "digite a idade"<< endl;
+                cin >> idade;
+                cout<< "digite o genero"<< endl;
+                cin >> genero;
+                cin.ignore();
+                cout<< "digite o CPF"<< endl;
+                getline(cin, CPF);
+                cout<< "digite a altura e o peso"<< endl;
+                cin >> altura >> peso; 
+                cout<< "digite o salario mensal e a avaliacao do funcionario"<< endl;
+                cin >> salario >> rating;
+                cout<< "digite a data da contratacao no formato: dia/mes/ano";
+                cin >> dia >> barra >> mes >> barra >> ano;
+                cin.ignore();
+                povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF, salario, rating, dia, mes, ano)); 
+            }else{
+                int pagamento, dia, mes, ano;
+                cout << "Digite o nome" << endl;
+                getline(cin, nome);
+                cout << "digite a idade" << endl;
+                cin >> idade;
+                cout << "digite o genero" << endl;
+                cin >> genero;
+                cin.ignore();
+                cout << "digite o CPF" << endl;
+                getline(cin, CPF);
+                cout << "digite a altura e o peso" << endl;
+                cin >> altura >> peso;
+                cout << "digite o pagamento mensal" << endl;
+                cin >> pagamento;
+                cout << "digite a data do contrato no formato: dia/mes/ano" << endl;
+                cin >> dia >> barra >> mes >> barra >> ano;
+                cin.ignore();
+                povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento));
+            }
+        }
         void info(int input){
             system("cls");
             cin>> input;
-            if(input<povo.size()){povo[input]->print();}
+            if(input<povo.size() && input>0 ){povo[input]->print();}
         }
 
         ~crud(){
