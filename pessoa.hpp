@@ -41,6 +41,7 @@ class pessoa {
             if(genero) cout << "M"; else{ cout << "F"; }
             cout << "\nAltura: " << altura << " || Peso: " << peso << endl;
         }
+        virtual ~pessoa() {}    
 };
 
 #endif
