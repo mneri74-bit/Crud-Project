@@ -21,7 +21,6 @@ class pessoa {
         peso = p;
         CPF = cpf;
         genero=g;
-        tipo= NULL;}
         tipo= 'a';}
         void comer() {
             cout << "comida boa!, espero que eu nao engorde\n";
