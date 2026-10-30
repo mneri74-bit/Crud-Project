@@ -14,7 +14,7 @@ class pessoa {
         float altura, peso;
     public:
         pessoa(){}
-        pessoa(string n,string g, int i, float al, float p, string cpf) {
+        pessoa(string n,bool g, int i, float al, float p, string cpf) {
         nome = n;
         idade = i;
         altura = al;
@@ -35,7 +35,14 @@ class pessoa {
             return nome;
         } 
         virtual void arquivo()=0;
-        virtual void print()=0;
+        virtual void print() {
+            cout << "Pessoa - " << nome << " - CPF: " << CPF << "\nIdade: " << idade << "|| Sexo: ";
+            if(genero) cout << "M"; else{ cout << "F"; }
+            cout << "\nAltura: " << altura << " || Peso: " << peso << endl;
+            cout << "Salario: " << salario << " || Rating: " << rating << endl;
+            cout << "Data de contratacao: ";
+            datadecontratacao.mostrar();
+            cout << endl;;
 };
 
 #endif
