@@ -8,19 +8,19 @@ using namespace std;
 class pessoa {
     protected:
         char tipo;
-        bool genero;
+        string genero;
         int idade;
         string nome, CPF;
         float altura, peso;
     public:
         pessoa(){}
-        pessoa(string n,bool g, int i, float al, float p, string cpf) {
+        pessoa(string n,string g, int i, float al, float p, string cpf) {
         nome = n;
         idade = i;
         altura = al;
         peso = p;
         CPF = cpf;
-        genero=g;
+        genero = g;
         tipo= NULL;}
         void comer() {
             cout << "comida boa!, espero que eu nao engorde\n";
