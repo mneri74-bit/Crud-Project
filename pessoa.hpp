@@ -2,7 +2,8 @@
 #define pessoa_h
 #include <string>
 #include <iostream>
-#include<fstream>
+#include <fstream>
+#include <cstdlib>
 #include <windows.h>
 using namespace std;
 class pessoa {
@@ -32,7 +33,8 @@ class pessoa {
             cout << "Pessoa - " << nome << " - CPF: " << CPF << "\nIdade: " << idade << "|| Sexo: ";
             if(genero) cout << "Masculino"; else{ cout << "Feminino"; }
             cout << "\nAltura: " << altura << " || Peso: " << peso << endl;
-            }
+        }
+        virtual ~pessoa() {}    
 };
 
 #endif
