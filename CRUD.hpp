@@ -26,10 +26,10 @@ class crud{
         static vector<pessoa*> povo;
         
         crud(): arquivo("registro.txt", ios::in){
-    if (!arquivo.is_open()) {
-        cout << "Erro ao abrir o arquivo para leitura!" << endl;
-        return;
-    }
+            if (!arquivo.is_open()) {
+                cout << "Erro ao abrir o arquivo para leitura!" << endl;
+                return;
+                }
     char tipo;
     while (arquivo >> tipo) {
         arquivo.ignore();
@@ -70,9 +70,9 @@ class crud{
             system("cls");
             for(int i=0; i<povo.size(); i++){
                 cout<< i+1<< " - ";
+                cout<< povo[i]->nom()<< endl;
                 if(povo[i]->type()=='$'){cout<< "F";}
                 else{cout<< "Cl";}
-                cout<< povo[i]->nom()<< endl;
             }
         }
         
@@ -137,7 +137,6 @@ class crud{
             for(int i=0; i<povo.size(); i++){
                 povo[i]->arquivo();
                 }
-            
         }
 };
 #endif

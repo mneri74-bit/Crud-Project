@@ -41,7 +41,8 @@ class funcionario : public virtual pessoa {
             arquivo.close();
         }
         void print(){ 
-            this->pessoa::print();            cout << "Salario: " << salario << " || Rating: " << rating << endl;
+            this->pessoa::print();
+            cout << "Salario: " << salario << " || Rating: " << rating << endl;
             cout << "Data de contratacao: ";
             datadecontratacao.mostrar();
             cout << endl;

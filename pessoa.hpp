@@ -21,15 +21,7 @@ class pessoa {
         peso = p;
         CPF = cpf;
         genero = g;
-        tipo = 'a';
-    }
-        void comer() {
-            cout << "comida boa!, espero que eu nao engorde\n";
-            Sleep(500);
-            if(rand() % 2) {
-            cout << nome <<"ganhou peso\n";
-            peso += 0.1f;}   
-        }
+        tipo = 'a';}
         char type(){
             return tipo;}
         string nom(){
@@ -38,7 +30,7 @@ class pessoa {
         virtual void arquivo()=0;
         virtual void print() {
             cout << "Pessoa - " << nome << " - CPF: " << CPF << "\nIdade: " << idade << "|| Sexo: ";
-            if(genero) cout << "M"; else{ cout << "F"; }
+            if(genero) cout << "Masculino"; else{ cout << "Feminino"; }
             cout << "\nAltura: " << altura << " || Peso: " << peso << endl;
             }
 };
