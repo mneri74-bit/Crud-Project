@@ -1,3 +1,5 @@
+#ifndef data_h
+#define data_h
 #include <iostream>
 #include <string>
 
@@ -19,3 +21,5 @@ public:
                   << ano << std::endl;
     }
 };
+
+#endif

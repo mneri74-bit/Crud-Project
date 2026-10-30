@@ -35,7 +35,11 @@ class pessoa {
             return nome;
         } 
         virtual void arquivo()=0;
-        virtual void print()=0;
+        virtual void print() {
+            cout << "Pessoa - " << nome << " - CPF: " << CPF << "\nIdade: " << idade << "|| Sexo: ";
+            if(genero) cout << "M"; else{ cout << "F"; }
+            cout << "\nAltura: " << altura << " || Peso: " << peso << endl;
+            }
 };
 
 #endif

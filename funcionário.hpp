@@ -40,11 +40,8 @@ class funcionario : public virtual pessoa {
             arquivo<< salario<<endl<<rating<<endl<<datadecontratacao.dia<<endl<<datadecontratacao.mes<<endl<< datadecontratacao.ano;
             arquivo.close();
         }
-        void print(){
-            cout << "Funcionario - " << nome << " - CPF: " << CPF << "\nIdade: " << idade << "|| Sexo: ";
-            if(genero) cout << "M"; else{ cout << "F"; }
-            cout << "\nAltura: " << altura << " || Peso: " << peso << endl;
-            cout << "Salario: " << salario << " || Rating: " << rating << endl;
+        void print(){ 
+            this->pessoa::print();            cout << "Salario: " << salario << " || Rating: " << rating << endl;
             cout << "Data de contratacao: ";
             datadecontratacao.mostrar();
             cout << endl;
