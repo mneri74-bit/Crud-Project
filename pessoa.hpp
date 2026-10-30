@@ -20,8 +20,9 @@ class pessoa {
         altura = al;
         peso = p;
         CPF = cpf;
-        genero=g;
-        tipo= 'a';}
+        genero = g;
+        tipo = 'a';
+    }
         void comer() {
             cout << "comida boa!, espero que eu nao engorde\n";
             Sleep(500);
