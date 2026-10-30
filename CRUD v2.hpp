@@ -68,7 +68,8 @@ class crud{
                 arquivo >> dia >> mes >> ano;
                 arquivo >> c0 >> c1 >> c2;
                 arquivo.ignore();
-                povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, c0, c1, c2, diatreino, skip));
+
+                povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento,));
             }
         }
     }
@@ -95,7 +96,6 @@ class crud{
             cout << "Nome (ou parte do nome) a pesquisar: ";
             getline(cin >> ws, busca);
             string b = minusculo(busca);
-
             vector<int> achados;
             for(int i=0; i<(int)povo.size(); i++){
                 string nome = povo[i]->nom();
@@ -103,7 +103,6 @@ class crud{
                     achados.push_back(i);
                 }
             }
-
             if(achados.empty()){
                 cout << "Nenhum registro encontrado." << endl;
                 return -1;
@@ -111,16 +110,15 @@ class crud{
             if(achados.size() == 1){
                 return achados[0];
             }
-
             cout << "Foram encontrados varios registros:" << endl;
+            cout << "Escolha o numero (0 para cancelar): ";
             for(int k=0; k<(int)achados.size(); k++){
                 int i = achados[k];
                 cout << k+1 << " - ";
-                cout << (povo[i]->type()=='$' ? "F " : "Cl ");
-                cout << povo[i]->nom() << endl;
+                cout << povo[i]->nom() ;
+                cout << (povo[i]->type()=='$' ? "Funcionario" : "Cliente")<< endl;
             }
             int esc;
-            cout << "Escolha o numero (0 para cancelar): ";
             cin >> esc;
             bool invalido = !cin || esc < 1 || esc > (int)achados.size();
             cin.clear();
