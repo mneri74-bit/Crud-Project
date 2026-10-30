@@ -80,6 +80,31 @@ class crud{
             if(input<povo.size()){povo[input]->print();}
         }
 
+        void remover() {
+                system("cls");
+    if (povo.empty()) {
+        cout << "nenhum registro\n";
+        return;
+    }
+
+    string nome;
+    
+	cout << "remover pelo nome: ";
+
+    getline(cin >> ws, nome);   
+
+    int i = PESQUISAR(nome);
+    if (i < 0 || i >= (int)povo.size()) {
+        cout << "falha ao encontrar registro.\n";
+        return;
+    }
+
+    string removido = povo[i]->nom();    
+    delete povo[i];                      
+    povo.erase(povo.begin() + i);        
+    cout << removido << " removido(a).\n";
+}
+
         ~crud(){
              ofstream arquivo("registro.txt",ios::out);
             for(int i=0; i<povo.size(); i++){
