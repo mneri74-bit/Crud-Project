@@ -14,12 +14,14 @@ class pessoa {
         float altura, peso;
     public:
         pessoa(){}
-        pessoa(string n, int i, float al, float p, string cpf) {
+        pessoa(string n,bool g, int i, float al, float p, string cpf) {
         nome = n;
         idade = i;
         altura = al;
         peso = p;
-        CPF = cpf;}
+        CPF = cpf;
+        genero=g;
+        tipo= NULL;}
         void comer() {
             cout << "comida boa!, espero que eu nao engorde\n";
             Sleep(500);
@@ -28,8 +30,12 @@ class pessoa {
             peso += 0.1f;}   
         }
         char type(){
-            return tipo;
+            return tipo;}
+        string nom(){
+            return nome;
         } 
         virtual void arquivo()=0;
+        virtual void print()=0;
 };
+
 #endif
