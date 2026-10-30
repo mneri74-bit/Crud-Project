@@ -14,7 +14,7 @@ using namespace std;
 /*1. Inserir: cadastrar um novo registro.
 2. Listar todos: exibir todos os registros cadastrados.
 3. Exibir um: pesquisar e exibir um registro.
-4. Alterar: pesquisar e modificar um registro.
+4. Alterar: pesquisar e modificar um registro. bom dia
 5. Remover: pesquisar e excluir um registro.
 6. Exibir relatório: apresentar um resumo dos dados.
 7. Sair: encerrar o programa*/
