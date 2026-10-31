@@ -92,17 +92,19 @@ class crud{
             system("cls");
             for(int i=0; i<povo.size(); i++){
                 cout<< i+1<< " - ";
-                cout<< povo[i]->nom()<< endl;
-                if(povo[i]->type()=='$'){cout<< " - Funcionario";}
-                else{cout<<  " - Cliente";}
-            }
-            while (1){
-                if(kbhit()){
-                    if(getch()==27) break;
-                }
-            }
-            
+                cout<< povo[i]->nome
+                if(povo[i]->type()=='$'){cout<< " - Funcionario"<< endl;}
+                else{cout<<  " - Cliente"<< endl;;}
+            }          
+        }
 
+        void exibir(){
+            listar();
+            int input;
+            cout<< "Qual elemento voce quer  exibir:  ";
+            cin>> input;
+            input--; 
+            info(input);
         }
 
     void add(){

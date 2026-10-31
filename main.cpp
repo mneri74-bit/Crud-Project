@@ -3,7 +3,7 @@
 #include "pessoa.hpp"
 #include "funcionário.hpp"
 #include "cliente.hpp"
-#include "CRUD.hpp"
+#include "CRUD v2.hpp"
 #include <conio.h>
 #include <windows.h>
 using namespace std;
@@ -17,7 +17,7 @@ using namespace std;
 int main() {
     crud academia;
     system("cls");
-    int input;
+    int input=0;
     while(input!=7){
         if(kbhit()){
             input = getch();
@@ -27,18 +27,27 @@ int main() {
                 break;
             case 2:
                 academia.listar();
+                while (1){
+                if(kbhit()){
+                    if(getch()==27) break;
+                }
+            }
                 break;
             case 3:
-                //exibir um
+                academia.exibir();
+                while (1){
+                if(kbhit()){
+                    if(getch()==27) break;
+                }
                 break;
             case 4:
-                //alterar
+                academia.alterar();
                 break;
             case 5:
                 academia.remover();
                 break;
             case 6:
-                //relatório
+                academia.relatorio();
                 break;
             case 7:
                 system("cls");
@@ -47,8 +56,8 @@ int main() {
             default:
                 cout<< "comando inválido";
                 break;
+                }
             }
         }
     }
 }
-
