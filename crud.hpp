@@ -92,13 +92,14 @@ class crud{
             system("cls");
             for(int i=0; i<povo.size(); i++){
                 cout<< i+1<< " - ";
-                cout<< povo[i]->nome
+                cout<< povo[i]->nome;
                 if(povo[i]->type()=='$'){cout<< " - Funcionario"<< endl;}
-                else{cout<<  " - Cliente"<< endl;;}
+                else{cout<<  " - Cliente"<< endl;}
             }          
         }
 
         void exibir(){
+            //ratos imundos ignobeis
             listar();
             int input;
             cout<< "Qual elemento voce quer  exibir:  ";
