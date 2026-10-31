@@ -3,7 +3,7 @@
 #include "pessoa.hpp"
 #include "funcionário.hpp"
 #include "cliente.hpp"
-#include "CRUD v2.hpp"
+#include "crud.hpp"
 #include <conio.h>
 #include <windows.h>
 using namespace std;
@@ -22,6 +22,8 @@ int main() {
         if(kbhit()){
             input = getch();
             switch (input){
+            case 0:
+                break;
             case 1:
                 academia.add();
                 break;
