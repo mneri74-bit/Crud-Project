@@ -151,7 +151,7 @@ class crud{
         string nome;
         cout << "remover pelo nome: ";
         getline(cin >> ws, nome);   
-        int i = pesquisar(nome);
+        int i //= pesquisar(nome);
         if (i < 0 || i >= (int)povo.size()) {
             cout << "falha ao encontrar registro.\n";
             return;

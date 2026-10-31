@@ -13,11 +13,12 @@ using namespace std;
 class funcionario : public virtual pessoa {
     friend class crud;
     protected:
+        string cargo;
         int salario;
         float rating;
         Data datadecontratacao;
         static funcionario* best;
-        
+
 
     public:
         funcionario(string n,bool g, int i, float al, float p, string cpf, int sal, float rat, int dia, int mes, int ano): pessoa(n,g,  i, al, p, cpf){
@@ -31,8 +32,8 @@ class funcionario : public virtual pessoa {
             }
             tipo='$';
          }
-        int getsalarioanual(){
-            return salario*12;
+        int getsalario(){
+            return salario;
         }
         void arquivo(){
             ofstream arquivo("registro.txt", ios::app);
@@ -47,6 +48,9 @@ class funcionario : public virtual pessoa {
             cout << "Data de contratacao: ";
             datadecontratacao.mostrar();
             cout << endl;
-}
+        }
+        static funcionario* getGOAT(){ return best; }
 };
+
+funcionario* funcionario::best = nullptr;
 #endif

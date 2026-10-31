@@ -43,7 +43,7 @@ class crud{
     public:
         fstream arquivo;
         static vector<pessoa*> povo;
-
+        //construtor
         crud(): arquivo("registro.txt", ios::in){
             if (!arquivo.is_open()) {
                 cout << "Erro ao abrir o arquivo para leitura!" << endl;
@@ -86,19 +86,83 @@ class crud{
             }
         }
     }
-        void info(int input){
+
+        void listar(){
+            int input;
+            system("cls");
+            for(int i=0; i<povo.size(); i++){
+                cout<< i+1<< " - ";
+                cout<< povo[i]->nom()<< endl;
+                if(povo[i]->type()=='$'){cout<< " - Funcionario";}
+                else{cout<<  " - Cliente";}
+            }
+            while (1){
+                if(kbhit()){
+                    if(getch()==27) break;
+                }
+            }
+            
+
+        }
+
+    void add(){
+            bool tipo;
+            cout<< "Qual tipo de cadastro você vai querer fazer?\n0-Cliente\n1-Funcionário\n";
+            cin>>  tipo;
+            char barra;
+            string nome, CPF;
+            bool genero;
+            int idade;
+            float altura, peso;
+            if (tipo){               
+                int salario, dia, mes, ano;
+                float rating;
+                cout<< "Digite o nome"<< endl;
+                getline(cin, nome);
+                cout<< "digite a idade"<< endl;
+                cin >> idade;
+                cout<< "digite o genero"<< endl;
+                cin >> genero;
+                cin.ignore();
+                cout<< "digite o CPF"<< endl;
+                getline(cin, CPF);
+                cout<< "digite a altura e o peso"<< endl;
+                cin >> altura >> peso; 
+                cout<< "digite o salario mensal e a avaliacao do funcionario"<< endl;
+                cin >> salario >> rating;
+                cout<< "digite a data da contratacao no formato: dia/mes/ano";
+                cin >> dia >> barra >> mes >> barra >> ano;
+                cin.ignore();
+                povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF, salario, rating, dia, mes, ano)); 
+            }else{
+                int pagamento, dia, mes, ano;
+                string matricula;
+                cout << "Digite o nome" << endl;
+                getline(cin, nome);
+                cout << "digite a idade" << endl;
+                cin >> idade;
+                cout << "digite o genero" << endl;
+                cin >> genero;
+                cin.ignore();
+                cout << "digite o CPF" << endl;
+                getline(cin, CPF);
+                cout << "digite a altura e o peso" << endl;
+                cin >> altura >> peso;
+                cout << "digite o pagamento mensal" << endl;
+                cin >> pagamento;
+                cout << "digite a data do contrato no formato: dia/mes/ano" << endl;
+                cin >> dia >> barra >> mes >> barra >> ano;
+                cin.ignore();
+                getline(arquivo, matricula );
+                povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, matricula));
+            }
+        }
+
+    void info(int input){
             system("cls");
             cin>> input;
             if(input<povo.size() && input>0 ){povo[input]->print();}
         }
-
-        void remover() {
-        system("cls");
-        if (povo.empty()) {
-            cout << "nenhum registro\n";
-            return;
-        }
-    }
         // Pesquisa por nome (ou parte do nome), sem diferenciar maiúsculas/minúsculas.
         // Retorna o índice da pessoa em povo, ou -1 se não encontrou / cancelou.
         int pesquisar(){
@@ -136,7 +200,6 @@ class crud{
             if(invalido) return -1;
             return achados[esc-1];
         }
-
         // Pesquisa uma pessoa e substitui o cadastro dela pelos novos dados digitados.
         void alterar(){
     system("cls");
@@ -248,6 +311,7 @@ class crud{
             }
              cout << "\nCadastro alterado com sucesso!" << endl;
         }
+        
         void remover() {
     system("cls");
 
@@ -264,6 +328,35 @@ class crud{
     povo.erase(povo.begin() + i);        
     cout << removido << " removido(a).\n";
 }
+
+        void relatorio(){
+            /*funcionario do mes
+            receita media 
+             despesa media 
+                receita total
+              despesas totais
+              lucro*/
+              int receita=0,funcionarios=0,clientes=0,despesas=0;
+                for (int i=0; i<povo.size(); i++){
+                    if(povo[i]->tipo == '$'){
+                        funcionario* f = dynamic_cast<funcionario*>(povo[i]);
+                        funcionarios++;
+                        despesas += f->salario;
+                    } else {
+                        cliente* c = dynamic_cast<cliente*>(povo[i]);
+                        clientes++;
+                        receita += c->pagamento;
+                    }
+                }
+            system("cls");
+            cout<< "Quantidade de funcionarios: "<< funcionarios<< endl;
+            cout<< "Quantidade de clientes: "<< clientes<< endl;
+            cout<< "Funcionario do mes: "<< funcionario::best->nome<< endl;
+            cout<< "Receita por funcionario: "<<  receita/funcionarios<< endl;
+            cout<< "Salario Medio"<< despesas/funcionarios<< endl;
+            cout<< " Lucro: "<< receita-despesas<<endl;
+        }
+
 
         ~crud(){
              ofstream arquivo("registro.txt",ios::out);
