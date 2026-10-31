@@ -11,6 +11,7 @@ using namespace std;
 
 
 class funcionario : public virtual pessoa {
+    friend class crud;
     protected:
         int salario;
         float rating;

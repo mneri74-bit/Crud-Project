@@ -8,11 +8,22 @@
 #include "pessoa.hpp"
 #include "cliente.hpp"
 #include "funcionário.hpp"
-#include "windows.h"
-
-
+#include <conio.h>
+#include <iostream>
+#include <windows.h>
+using namespace std;
 #include  <fstream>
 using namespace std;
+int gotoxy(int x, int y) {
+    if(x >= 0 && y >= 0){
+        COORD coord;
+        coord.X = x;
+        coord.Y = y;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+        return 0;
+    }
+    return 1;
+}
 /*1. Inserir: cadastrar um novo registro.
 2. Listar todos: exibir todos os registros cadastrados.
 3. Exibir um: pesquisar e exibir um registro.
@@ -32,63 +43,62 @@ class crud{
     public:
         fstream arquivo;
         static vector<pessoa*> povo;
-        crud(): arquivo("registro.txt", ios::in){
-    if (!arquivo.is_open()) {
-        cout << "Erro ao abrir o arquivo para leitura!" << endl;
-        return;
-    }
-    char tipo;
-    while (arquivo >> tipo) {
-        arquivo.ignore();
-        if (tipo == '$') {
-            string nome, CPF;
-            bool genero;
-            int idade, salario, dia, mes, ano;
-            float altura, peso, rating;
-            getline(arquivo, nome);
-            arquivo >> idade;
-            arquivo >> genero;
-            arquivo.ignore();
-            getline(arquivo, CPF);
-            arquivo >> altura >> peso >> salario >> rating;
-            arquivo >> dia >> mes >> ano;
-            arquivo.ignore();
-            povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF, salario, rating, dia, mes, ano));
-        }else if(tipo=='#'){
-                string nome, CPF;
-                bool genero;
-                int idade, diatreino, skip, pagamento, dia, mes, ano;
-                float altura, peso, c0, c1, c2;
-                getline(arquivo, nome);
-                arquivo >> idade >> genero;
-                arquivo.ignore();     
-                getline(arquivo, CPF);
-                arquivo >> altura >> peso;
-                arquivo >> diatreino >> skip >> pagamento;
-                arquivo >> dia >> mes >> ano;
-                arquivo >> c0 >> c1 >> c2;
-                arquivo.ignore();
 
-                povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento,));
+        crud(): arquivo("registro.txt", ios::in){
+            if (!arquivo.is_open()) {
+                cout << "Erro ao abrir o arquivo para leitura!" << endl;
+                return;
+                }
+            char tipo;
+            char barra;
+                    string nome, CPF;
+                    bool genero;
+                    int idade;
+                    float altura, peso;
+            while (arquivo >> tipo) {
+                arquivo.ignore();
+                if (tipo == '$') {
+                    int salario, dia, mes, ano;
+                    float  rating;
+                    getline(arquivo, nome);
+                    arquivo >> idade;
+                    arquivo >> genero;
+                    arquivo.ignore();
+                    getline(arquivo, CPF);
+                    arquivo >> altura >> peso >> salario >> rating;
+                    arquivo >> dia >> mes >> ano;
+                    arquivo.ignore();
+                    povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF, salario, rating, dia, mes, ano));
+                }else if(tipo=='#'){
+                        int pagamento, dia, mes, ano;
+                        string matricula;
+                        getline(arquivo, nome);
+                        arquivo >> idade;
+                        arquivo >> genero;
+                        arquivo.ignore();
+                        getline(arquivo, CPF);
+                        arquivo >> altura >> peso;
+                        arquivo >> pagamento;
+                        arquivo >> dia >> barra >> mes >> barra >> ano;
+                        arquivo.ignore();
+                        getline(arquivo, matricula );
+                        povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, matricula));
             }
         }
     }
-        void listar(){
-            int input;
-            system("cls");
-            for(int i=0; i<povo.size(); i++){
-                cout<< i+1<< " - ";
-                if(povo[i]->type()=='$'){cout<< "F";}
-                else{cout<< "Cl";}
-                cout<< povo[i]->nom()<< endl;
-            }
-        }
         void info(int input){
             system("cls");
             cin>> input;
-            if(input<povo.size()){povo[input]->print();}
+            if(input<povo.size() && input>0 ){povo[input]->print();}
         }
 
+        void remover() {
+        system("cls");
+        if (povo.empty()) {
+            cout << "nenhum registro\n";
+            return;
+        }
+    }
         // Pesquisa por nome (ou parte do nome), sem diferenciar maiúsculas/minúsculas.
         // Retorna o índice da pessoa em povo, ou -1 se não encontrou / cancelou.
         int pesquisar(){
@@ -111,7 +121,7 @@ class crud{
                 return achados[0];
             }
             cout << "Foram encontrados varios registros:" << endl;
-            cout << "Escolha o numero (0 para cancelar): ";
+            cout << "Escolha o numero (0 para cancelar): \n";
             for(int k=0; k<(int)achados.size(); k++){
                 int i = achados[k];
                 cout << k+1 << " - ";
@@ -129,58 +139,115 @@ class crud{
 
         // Pesquisa uma pessoa e substitui o cadastro dela pelos novos dados digitados.
         void alterar(){
-            system("cls");
-            int idx = pesquisar();
-            if(idx < 0) return;
+    system("cls");
+    int idx = pesquisar();
+    if(idx < 0) return;
 
-            cout << "\nCadastro atual:" << endl;
-            povo[idx]->print();
-            cout << "\nDigite os NOVOS dados:" << endl;
-
-            string nome, CPF;
-            bool genero;
-            int idade, dia, mes, ano;
-            float altura, peso;
-
-            cout << "Nome: ";                      getline(cin >> ws, nome);
-            cout << "Idade: ";                     cin >> idade;
-            cout << "Genero (0/1): ";              cin >> genero;
-            cout << "CPF: ";                       getline(cin >> ws, CPF);
-            cout << "Altura: ";                    cin >> altura;
-            cout << "Peso: ";                      cin >> peso;
-            cout << "Data (dia mes ano): ";        cin >> dia >> mes >> ano;
-
-            pessoa* novo = nullptr;
-            if(povo[idx]->type() == '$'){
-                int salario;
-                float rating;
-                cout << "Salario: ";               cin >> salario;
-                cout << "Rating: ";                cin >> rating;
-                novo = new funcionario(nome, genero, idade, altura, peso, CPF, salario, rating, dia, mes, ano);
-            }else{
-                int diatreino, skip, pagamento;
-                float c0, c1, c2;
-                cout << "Dia de treino: ";         cin >> diatreino;
-                cout << "Skip: ";                  cin >> skip;
-                cout << "Pagamento: ";             cin >> pagamento;
-                cout << "c0 c1 c2: ";              cin >> c0 >> c1 >> c2;
-                novo = new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, c0, c1, c2, diatreino, skip);
-            }
-
-            // Se alguma leitura falhou (ex.: letra no lugar de número), não altera nada.
-            if(!cin){
-                cin.clear();
-                cin.ignore(10000, '\n');
-                delete novo;
-                cout << "Entrada invalida. Nenhuma alteracao foi feita." << endl;
-                return;
-            }
-
-            delete povo[idx];
-            povo[idx] = novo;
-            cout << "Cadastro alterado com sucesso!" << endl;
+    bool sair = false;
+    while(!sair){
+        system("cls");
+        cout << "Cadastro atual:" << endl;
+        povo[idx]->print();
+        cout << "\n\nO que deseja alterar?\n";
+        cout << "1- Nome\n";
+        cout << "2- Idade\n";
+        cout << "3- Genero (1-M / 0-F)\n";
+        cout << "4- CPF\n";
+        cout << "5- Altura\n";
+        cout << "6- Peso\n";
+        cout << "7- Data\n";
+        if(povo[idx]->tipo == '$'){
+            cout << "8- Salario\n";
+            cout << "9- Rating\n";
+        } else {
+            cout << "8- Pagamento\n";
+            cout << "9- Matricula\n";
         }
+        cout << "0- Salvar e sair\n";
 
+        char opc = getch();
+
+        switch(opc){
+            case '1':
+                cout << "\nNovo nome: ";
+                cin.ignore();
+                getline(cin, povo[idx]->nome);
+                break;
+            case '2':
+                cout << "\nNova idade: ";
+                cin >> povo[idx]->idade;
+                break;
+            case '3':
+                cout << "\nNovo genero (1-M / 0-F): ";
+                cin >> povo[idx]->genero;
+                break;
+            case '4':
+                cout << "\nNovo CPF: ";
+                cin.ignore();
+                getline(cin, povo[idx]->CPF);
+                break;
+            case '5':
+                cout << "\nNova altura: ";
+                cin >> povo[idx]->altura;
+                break;
+            case '6':
+                cout << "\nNovo peso: ";
+                cin >> povo[idx]->peso;
+                break;
+            case '7': {
+                int dia, mes, ano;
+                char barra;
+                cout << "\nNova data (dia/mes/ano): ";
+                cin >> dia >> barra >> mes >> barra >> ano;
+                if(povo[idx]->tipo == '$'){
+                    funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
+                    f->datadecontratacao.dia = dia;
+                    f->datadecontratacao.mes = mes;
+                    f->datadecontratacao.ano = ano;
+                } else {
+                    cliente* c = dynamic_cast<cliente*>(povo[idx]);
+                    c->contratoprazo.dia = dia;
+                    c->contratoprazo.mes = mes;
+                    c->contratoprazo.ano = ano;
+                }
+                break;
+            }
+            case '8':
+                if(povo[idx]->tipo == '$'){
+                    funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
+                    cout << "\nNovo salario: ";
+                    cin >> f->salario;
+                } else {
+                    cliente* c = dynamic_cast<cliente*>(povo[idx]);
+                    cout << "\nNovo pagamento: ";
+                    cin >> c->pagamento;
+                }
+                break;
+            case '9':
+                if(povo[idx]->tipo == '$'){
+                    funcionario* f = dynamic_cast<funcionario*>(povo[idx]);                    
+                    cout << "\nNovo rating: ";
+                    cin >> f->rating;
+                } else {
+                    cliente* c = dynamic_cast<cliente*>(povo[idx]);
+                    cout << "\nNova matricula: ";
+                    cin >> c->matricula;
+                }
+                break;
+            case '0':
+                sair = true;
+                break;
+            default:
+                cout << "\nOpcao invalida.\n";
+        }
+                if(!cin){
+                    cin.clear();
+                    cin.ignore(10000, '\n');
+                    cout << "Entrada invalida, tente novamente.\n";
+                }
+            }
+             cout << "\nCadastro alterado com sucesso!" << endl;
+        }
         ~crud(){
              ofstream arquivo("registro.txt",ios::out);
             for(int i=0; i<povo.size(); i++){

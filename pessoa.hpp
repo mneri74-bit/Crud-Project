@@ -7,6 +7,7 @@
 #include <windows.h>
 using namespace std;
 class pessoa {
+    friend class crud;
     protected:
         char tipo;
         bool genero;

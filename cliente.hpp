@@ -8,6 +8,7 @@ using namespace std;
 
 //1-braço 2-costas 3-pernas
 class cliente : public virtual pessoa {
+    friend class crud;
     protected:
         Data contratoprazo;
         int pagamento;

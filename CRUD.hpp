@@ -30,47 +30,46 @@ class crud{
                 cout << "Erro ao abrir o arquivo para leitura!" << endl;
                 return;
                 }
-    char tipo;
-    char barra;
-            string nome, CPF;
-            bool genero;
-            int idade;
-            float altura, peso;
-    while (arquivo >> tipo) {
-        arquivo.ignore();
-        if (tipo == '$') {
-            int salario, dia, mes, ano;
-            float  rating;
-            getline(arquivo, nome);
-            arquivo >> idade;
-            arquivo >> genero;
-            arquivo.ignore();
-            getline(arquivo, CPF);
-            arquivo >> altura >> peso >> salario >> rating;
-            arquivo >> dia >> mes >> ano;
-            arquivo.ignore();
-            povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF, salario, rating, dia, mes, ano));
-        }else if(tipo=='#'){
-                int pagamento, dia, mes, ano;
-                string matricula;
-                cout << "Digite o nome" << endl;
-                getline(cin, nome);
-                cout << "digite a idade" << endl;
-                cin >> idade;
-                cout << "digite o genero" << endl;
-                cin >> genero;
-                cin.ignore();
-                cout << "digite o CPF" << endl;
-                getline(cin, CPF);
-                cout << "digite a altura e o peso" << endl;
-                cin >> altura >> peso;
-                cout << "digite o pagamento mensal" << endl;
-                cin >> pagamento;
-                cout << "digite a data do contrato no formato: dia/mes/ano" << endl;
-                cin >> dia >> barra >> mes >> barra >> ano;
-                cin.ignore();
-                getline(arquivo, matricula );
-                povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, matricula));
+            char tipo;
+            char barra;
+                    string nome, CPF;
+                    bool genero;
+                    int idade;
+                    float altura, peso;
+            while (arquivo >> tipo) {
+                arquivo.ignore();
+                if (tipo == '$') {
+                    int salario, dia, mes, ano;
+                    float  rating;
+                    getline(arquivo, nome);
+                    arquivo >> idade;
+                    arquivo >> genero;
+                    arquivo.ignore();
+                    getline(arquivo, CPF);
+                    arquivo >> altura >> peso >> salario >> rating;
+                    arquivo >> dia >> mes >> ano;
+                    arquivo.ignore();
+                    povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF, salario, rating, dia, mes, ano));
+                }else if(tipo=='#'){
+                        int pagamento, dia, mes, ano;
+                        string matricula;
+                        getline(cin, nome);
+                        cout << "digite a idade" << endl;
+                        cin >> idade;
+                        cout << "digite o genero" << endl;
+                        cin >> genero;
+                        cin.ignore();
+                        cout << "digite o CPF" << endl;
+                        getline(cin, CPF);
+                        cout << "digite a altura e o peso" << endl;
+                        cin >> altura >> peso;
+                        cout << "digite o pagamento mensal" << endl;
+                        cin >> pagamento;
+                        cout << "digite a data do contrato no formato: dia/mes/ano" << endl;
+                        cin >> dia >> barra >> mes >> barra >> ano;
+                        cin.ignore();
+                        getline(arquivo, matricula );
+                        povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, matricula));
             }
         }
     }
