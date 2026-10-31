@@ -248,6 +248,23 @@ class crud{
             }
              cout << "\nCadastro alterado com sucesso!" << endl;
         }
+        void remover() {
+    system("cls");
+
+    if (povo.empty()) {
+        cout << "Nenhum registro cadastrado.\n";
+        return;
+    }
+
+    int i = pesquisar();
+    if (i < 0 || i >= (int)povo.size()) return;  
+
+    string removido = povo[i]->nom();   
+    delete povo[i];                     
+    povo.erase(povo.begin() + i);        
+    cout << removido << " removido(a).\n";
+}
+
         ~crud(){
              ofstream arquivo("registro.txt",ios::out);
             for(int i=0; i<povo.size(); i++){
