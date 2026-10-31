@@ -14,7 +14,6 @@ class cliente : public virtual pessoa {
         string matricula;
         float IMC;
 
-        // IMC = peso / altura². Altura em metros (ex.: 1.75)
         void calcularIMC() {
             IMC = (altura > 0) ? peso / (altura * altura) : 0;
         }
@@ -28,7 +27,6 @@ class cliente : public virtual pessoa {
             calcularIMC();
         }
 
-        // getters (necessários agora que os atributos são privados)
         int getPagamento() { return pagamento; }
         string getMatricula() { return matricula; }
         float getIMC() { return IMC; }
