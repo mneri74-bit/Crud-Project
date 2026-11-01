@@ -18,7 +18,7 @@ public:
     void mostrar() {
         std::cout << (dia < 10 ? "0" : "") << dia << "/"
                   << (mes < 10 ? "0" : "") << mes << "/"
-                  << ano << std::endl;
+                  << ano;
     }
 };
 

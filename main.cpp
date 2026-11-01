@@ -7,59 +7,62 @@
 #include <conio.h>
 #include <windows.h>
 using namespace std;
-/*1. Inserir: cadastrar um novo registro.x
-2. Listar todos: exibir todos os registros cadastrados. x
-3. Exibir um: pesquisar e exibir um registro.x
-4. Alterar: pesquisar e modificar um registro.x
-5. Remover: pesquisar e excluir um registro.x
-6. Exibir relatório: apresentar um resumo dos dados.
-7. Sair: encerrar o programa*/
+/*1. Inserir
+2. Listar todos
+3. Exibir um
+4. Alterar
+5. Remover
+6. Exibir relatório
+7. Sair*/
 int main() {
     crud academia;
-    system("cls");
-    int input=0;
-    while(input!=7){
-        if(kbhit()){
-            input = getch();
-            switch (input){
-            case 0:
-                break;
-            case 1:
+    char input = 0;
+    while (input != '7') {
+        system("cls");
+        cout << "=== Academia - CRUD ===\n";
+        cout << "1 - Inserir\n";
+        cout << "2 - Listar todos\n";
+        cout << "3 - Exibir um\n";
+        cout << "4 - Alterar\n";
+        cout << "5 - Remover\n";
+        cout << "6 - Relatorio\n";
+        cout << "7 - Sair\n";
+        cout << "Escolha uma opcao: ";
+        input = getch();
+        cout << input << "\n";
+        switch (input){
+            case '1':
                 academia.add();
+                getch();
                 break;
-            case 2:
+            case '2':
                 academia.listar();
-                while (1){
-                if(kbhit()){
-                    if(getch()==27) break;
-                }
-            }
+                getch();
                 break;
-            case 3:
+            case '3':
                 academia.exibir();
-                while (1){
-                if(kbhit()){
-                    if(getch()==27) break;
-                }
+                getch();
                 break;
-            case 4:
+            case '4':
                 academia.alterar();
+                getch();
                 break;
-            case 5:
+            case '5':
                 academia.remover();
+                getch();
                 break;
-            case 6:
+            case '6':
                 academia.relatorio();
+                getch();
                 break;
-            case 7:
-                system("cls");
-                cout<< "Volte sempre :)";
+            case '7':
                 break;
             default:
-                cout<< "comando inválido";
+                cout << "Opcao invalida.\n";
+                getch();
                 break;
-                }
-            }
         }
     }
+    system("cls");
+    cout << "Volte sempre :)\n";
 }

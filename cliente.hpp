@@ -37,6 +37,7 @@ class cliente : public virtual pessoa {
             arquivo<< tipo<< endl;
             arquivo<< nome <<endl << idade<<endl << genero << endl<< CPF <<endl<< altura<< endl <<peso<< endl;
             arquivo<<pagamento<<endl<<contratoprazo.dia<<endl<<contratoprazo.mes<<endl<<contratoprazo.ano<<endl;
+            arquivo<<matricula<<endl;
             arquivo.close();
         }
         void print(){

@@ -12,7 +12,7 @@ using namespace std;
 
 class funcionario : public virtual pessoa {
     friend class crud;
-    protected:
+    private:                    // ALTERADO: de protected para private (exigência da spec)
         string cargo;
         int salario;
         float rating;
@@ -21,15 +21,15 @@ class funcionario : public virtual pessoa {
 
 
     public:
-        funcionario(string n,bool g, int i, float al, float p, string cpf, int sal, float rat, int dia, int mes, int ano): pessoa(n,g,  i, al, p, cpf){
+        funcionario(string n,bool g, int i, float al, float p, string cpf,
+                    string car, int sal, float rat, int dia, int mes, int ano)
+        : pessoa(n,g, i, al, p, cpf){
+            cargo = car;
             salario=sal;
             rating=rat;
             datadecontratacao.dia=dia; 
             datadecontratacao.mes=mes;
             datadecontratacao.ano=ano;
-            if(!best || best->rating<rat){
-                best=this;
-            }
             tipo='$';
          }
         int getsalario(){
@@ -39,11 +39,13 @@ class funcionario : public virtual pessoa {
             ofstream arquivo("registro.txt", ios::app);
             arquivo<< tipo<< endl;
             arquivo<< nome <<endl << idade<<endl << genero << endl<< CPF <<endl<< altura<< endl <<peso<< endl;
-            arquivo<< salario<<endl<<rating<<endl<<datadecontratacao.dia<<endl<<datadecontratacao.mes<<endl<< datadecontratacao.ano;
+            arquivo<< cargo << endl;
+            arquivo<< salario<<endl<<rating<<endl<<datadecontratacao.dia<<endl<<datadecontratacao.mes<<endl<< datadecontratacao.ano<<endl;
             arquivo.close();
         }
         void print(){ 
             this->pessoa::print();
+            cout << "Cargo: " << cargo << endl;
             cout << "Salario: " << salario << " || Rating: " << rating << endl;
             cout << "Data de contratacao: ";
             datadecontratacao.mostrar();
@@ -52,5 +54,5 @@ class funcionario : public virtual pessoa {
         static funcionario* getGOAT(){ return best; }
 };
 
-funcionario* funcionario::best = nullptr;
+inline funcionario* funcionario::best = nullptr;
 #endif
