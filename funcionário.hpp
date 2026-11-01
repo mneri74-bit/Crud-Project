@@ -43,7 +43,7 @@ class funcionario : public virtual pessoa {
             arquivo<< salario<<endl<<rating<<endl<<datadecontratacao.dia<<endl<<datadecontratacao.mes<<endl<< datadecontratacao.ano<<endl;
             arquivo.close();
         }
-        void print(){ 
+        void print() override { 
             this->pessoa::print();
             cout << "Cargo: " << cargo << endl;
             cout << "Salario: " << salario << " || Rating: " << rating << endl;

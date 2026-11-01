@@ -16,6 +16,29 @@
 #include "data.hpp"
 using namespace std;
 
+// Legendas de cores
+#define PRETO 0
+#define AZUL_ESCURO 1
+#define VERDE_ESCURO 2
+#define CIANO_ESCURO 3
+#define VERMELHO_ESCURO 4
+#define ROXO 5
+#define AMARELO_ESCURO 6
+#define PADRAO 7
+#define CINZA_ESCURO 8
+#define AZUL_CLARO 9
+#define VERDE_CLARO 10
+#define CIANO_CLARO 11
+#define VERMELHO_CLARO 12
+#define ROSA_MAGENTA 13
+#define AMARELO_CLARO 14
+#define BRANCO 15
+
+// Função nativa do Windows para colorir o texto
+void textcolor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
 inline int gotoxy(int x, int y) {
     if(x >= 0 && y >= 0){
         COORD coord;
@@ -39,6 +62,13 @@ class crud{
         string nomeAcademia;
         string endereco;
         string cnpj;
+
+        void cabecalho(string titulo){
+            system("cls");
+            textcolor(CIANO_CLARO);
+            cout << "\n  === " << titulo << " ===\n\n";
+            textcolor(PADRAO);
+        }
 
     public:
         fstream arquivo;
@@ -73,13 +103,30 @@ class crud{
             return false;
         }
 
-        crud() : arquivo("registro.txt", ios::in) {
-            system("cls");
-            cout << "=== CONFIGURACAO INICIAL ===" << endl;
-            cout << "Digite o nome da academia: ";
-            getline(cin >> ws, nomeAcademia);
-            cout << "Digite o endereco da academia: ";
-            getline(cin >> ws, endereco);
+                crud() : arquivo("registro.txt", ios::in) {
+            // Tenta ler a configuração salva
+            string primeiraLinha;
+            bool temConfig = false;
+            
+            if (arquivo.is_open()) {
+                if (getline(arquivo, primeiraLinha) && primeiraLinha == "CONFIG") {
+                    getline(arquivo, nomeAcademia);
+                    getline(arquivo, endereco);
+                    temConfig = true;
+                }
+            }
+
+            // Se não achou configuração, pergunta e gera o CNPJ/Data
+            if (!temConfig) {
+                system("cls");
+                textcolor(CIANO_CLARO);
+                cout << "\n  === CONFIGURACAO INICIAL ===\n\n";
+                textcolor(PADRAO);
+                cout << "  Digite o nome da academia: ";
+                getline(cin >> ws, nomeAcademia);
+                cout << "  Digite o endereco da academia: ";
+                getline(cin >> ws, endereco);
+            }
 
             time_t t = time(0);
             tm* now = localtime(&t);
@@ -93,46 +140,54 @@ class crud{
             cnpj = tempCNPJ.substr(0,2) + "." + tempCNPJ.substr(2,3) + "." + 
                    tempCNPJ.substr(5,3) + "/" + tempCNPJ.substr(8,4) + "-" + tempCNPJ.substr(12,2);
 
-            if (!arquivo.is_open()) {
-                cout << "\nNenhum registro ainda. Crie um novo cadastro." << endl;
-            } else {
+            // Agora lê os registros de clientes e funcionários
+            if (arquivo.is_open()) {
+                if (!temConfig) {
+                    // Se o arquivo existia mas não tinha a config (formato antigo), volta pro início
+                    arquivo.clear();
+                    arquivo.seekg(0);
+                }
+                
                 char tipo;
                 string nome, CPF;
                 bool genero;
                 int idade;
                 float altura, peso;
+                
                 while (arquivo >> tipo) {
-                    arquivo.ignore();
-                    if (tipo == '$') {
-                        int salario, dia, mes, ano;
-                        float rating;
-                        string cargo;
-                        getline(arquivo, nome);
-                        arquivo >> idade;
-                        arquivo >> genero;
+                    if (tipo == '$' || tipo == '#') { // Prevenção para não ler a linha "CONFIG" por engano
                         arquivo.ignore();
-                        getline(arquivo, CPF);
-                        arquivo >> altura >> peso;
-                        getline(arquivo >> ws, cargo);
-                        arquivo >> salario >> rating;
-                        arquivo >> dia >> mes >> ano;
-                        arquivo.ignore();
-                        povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF,
-                                                       cargo, salario, rating, dia, mes, ano));
-                    } else if (tipo == '#') {
-                        int pagamento, dia, mes, ano;
-                        string matricula;
-                        getline(arquivo, nome);
-                        arquivo >> idade;
-                        arquivo >> genero;
-                        arquivo.ignore();
-                        getline(arquivo, CPF);
-                        arquivo >> altura >> peso;
-                        arquivo >> pagamento;
-                        arquivo >> dia >> mes >> ano;
-                        arquivo.ignore();
-                        getline(arquivo, matricula);
-                        povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, matricula));
+                        if (tipo == '$') {
+                            int salario, dia, mes, ano;
+                            float rating;
+                            string cargo;
+                            getline(arquivo, nome);
+                            arquivo >> idade;
+                            arquivo >> genero;
+                            arquivo.ignore();
+                            getline(arquivo, CPF);
+                            arquivo >> altura >> peso;
+                            getline(arquivo >> ws, cargo);
+                            arquivo >> salario >> rating;
+                            arquivo >> dia >> mes >> ano;
+                            arquivo.ignore();
+                            povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF,
+                                                           cargo, salario, rating, dia, mes, ano));
+                        } else if (tipo == '#') {
+                            int pagamento, dia, mes, ano;
+                            string matricula;
+                            getline(arquivo, nome);
+                            arquivo >> idade;
+                            arquivo >> genero;
+                            arquivo.ignore();
+                            getline(arquivo, CPF);
+                            arquivo >> altura >> peso;
+                            arquivo >> pagamento;
+                            arquivo >> dia >> mes >> ano;
+                            arquivo.ignore();
+                            getline(arquivo, matricula);
+                            povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, matricula));
+                        }
                     }
                 }
             }
@@ -140,125 +195,249 @@ class crud{
         }
 
         void listar(){
-            system("cls");
+            cabecalho("LISTA DE REGISTROS");
+            if(povo.empty()){
+                textcolor(VERMELHO_CLARO);
+                cout << "  Nenhum registro cadastrado.\n";
+                textcolor(PADRAO);
+                return;
+            }
             for(int i=0; i<(int)povo.size(); i++){
-                cout<< i+1<< " - ";
-                cout<< povo[i]->nome;
-                if(povo[i]->type()=='$'){cout<< " - Funcionario"<< endl;}
-                else{cout<<  " - Cliente"<< endl;}
+                cout << "  [" << i+1 << "] " << povo[i]->nome;
+                if(povo[i]->type()=='$'){ 
+                    textcolor(AMARELO_CLARO);
+                    cout << " (Funcionario)\n"; 
+                    textcolor(PADRAO);
+                }
+                else{ 
+                    textcolor(CIANO_CLARO);
+                    cout << " (Cliente)\n"; 
+                    textcolor(PADRAO);
+                }
             }          
         }
 
         void exibir(){
-            listar();
-            cout << "Qual elemento voce quer exibir (0 para cancelar): ";
-            int input;
-            cin >> input;
-            if (!cin) {
-                cin.clear();
-                cin.ignore(10000, '\n');
-                cout << "Entrada invalida." << endl;
+            cabecalho("EXIBIR REGISTRO");
+            if(povo.empty()){
+                textcolor(VERMELHO_CLARO);
+                cout << "  Nenhum registro cadastrado.\n";
+                textcolor(PADRAO);
                 return;
             }
+            for(int i=0; i<(int)povo.size(); i++){
+                cout << "  [" << i+1 << "] " << povo[i]->nome;
+                if(povo[i]->type()=='$'){ cout << " (Funcionario)\n"; }
+                else{ cout << " (Cliente)\n"; }
+            }
+            cout << "\n  Digite o numero (0 para cancelar): ";
+            int input;
+            cin >> input;
+            if (!cin) { cin.clear(); cin.ignore(10000, '\n'); return; }
             if (input == 0) return;
             input--; 
             info(input);
         }
 
         void add(){
+            cabecalho("INSERIR NOVO CADASTRO");
             int tipo = -1;
-            cout<< "Qual tipo de cadastro você vai querer fazer?\n0-Cliente\n1-Funcionário\n";
-            cin>> tipo;
-            if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
+            do {
+                cout << "  Qual tipo de cadastro?\n  [0] Cliente\n  [1] Funcionario\n  Opcao: ";
+                cin >> tipo;
+                if (!cin || (tipo != 0 && tipo != 1)) {
+                    cin.clear(); cin.ignore(10000, '\n');
+                    textcolor(VERMELHO_CLARO); cout << "  Opcao invalida, tente novamente!\n"; textcolor(PADRAO);
+                }
+            } while (!cin || (tipo != 0 && tipo != 1));
             cin.ignore();
-            if (tipo != 0 && tipo != 1){
-                cout << "Opcao invalida." << endl;
-                return;
-            }
+            
+            system("cls");
+            textcolor(CIANO_CLARO);
+            cout << "\n  === PREENCHIMENTO DE DADOS ===\n\n";
+            textcolor(PADRAO);
+            
             char barra;
             string nome, CPF;
             bool genero;
             int idade = 0;
             float altura = 0, peso = 0;
+            
             if (tipo == 1){
                 int salario = 0, dia = 0, mes = 0, ano = 0, g = -1;
                 float rating = 0;
                 string cargo;
-                cout<< "Digite o nome"<< endl;
-                getline(cin, nome);
-                cout<< "digite a idade"<< endl;
-                cin >> idade;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
-                cout<< "digite o genero (1-M / 0-F)"<< endl;
-                cin >> g;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
-                if (g != 0 && g != 1){ cout << "Genero invalido." << endl; return; }
+                
+                cout << "  Nome: "; getline(cin, nome);
+                
+                do {
+                    cout << "  Idade: "; cin >> idade;
+                    if (!cin || idade < 0 || idade > 120) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Idade invalida, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || idade < 0 || idade > 120);
+                cin.ignore();
+                
+                do {
+                    cout << "  Genero (1-M / 0-F): "; cin >> g;
+                    if (!cin || (g != 0 && g != 1)) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Genero invalido, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || (g != 0 && g != 1));
                 genero = (g == 1);
                 cin.ignore();
-                cout<< "digite o CPF"<< endl;
-                getline(cin, CPF);
-                /*do{
-                } while (cpfExiste(CPF));*/
                 
-                if (cpfExiste(CPF)){ cout << "CPF ja cadastrado, digite outro CPF." << endl; return; }
-                cout<< "digite a altura e o peso"<< endl;
-                cin >> altura >> peso;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
-                cout<< "digite o cargo"<< endl;
-                getline(cin >> ws, cargo);
-                cout<< "digite o salario mensal e a avaliacao do funcionario"<< endl;
-                cin >> salario >> rating;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
-                cout<< "digite a data da contratacao no formato: dia/mes/ano"<< endl;
-                cin >> dia >> barra >> mes >> barra >> ano;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
+                do {
+                    cout << "  CPF: "; getline(cin, CPF);
+                    if (cpfExiste(CPF)) {
+                        textcolor(VERMELHO_CLARO); cout << "  CPF ja cadastrado, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (cpfExiste(CPF));
+                
+                do {
+                    cout << "  Altura (ex: 1.75): "; cin >> altura;
+                    if (!cin || altura <= 0) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Altura invalida, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || altura <= 0);
+                
+                do {
+                    cout << "  Peso (ex: 70.5): "; cin >> peso;
+                    if (!cin || peso <= 0) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Peso invalido, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || peso <= 0);
                 cin.ignore();
-                povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF,
-                                               cargo, salario, rating, dia, mes, ano));
+                
+                cout << "  Cargo: "; getline(cin, cargo);
+                
+                do {
+                    cout << "  Salario: "; cin >> salario;
+                    if (!cin || salario < 0) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Salario invalido, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || salario < 0);
+                
+                do {
+                    cout << "  Rating (0 a 10): "; cin >> rating;
+                    if (!cin || rating < 0 || rating > 10) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Rating deve ser entre 0 e 10, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || rating < 0 || rating > 10);
+                
+                do {
+                    cout << "  Data Contratacao (dia/mes/ano): "; cin >> dia >> barra >> mes >> barra >> ano;
+                    if (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Data invalida, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900);
+                cin.ignore();
+                
+                povo.push_back(new funcionario(nome, genero, idade, altura, peso, CPF, cargo, salario, rating, dia, mes, ano));
             }else{
                 int pagamento = 0, dia = 0, mes = 0, ano = 0, g = -1;
                 string matricula;
-                cout << "Digite o nome" << endl;
-                getline(cin, nome);
-                cout << "digite a idade" << endl;
-                cin >> idade;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
-                cout << "digite o genero (1-M / 0-F)" << endl;
-                cin >> g;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
-                if (g != 0 && g != 1){ cout << "Genero invalido." << endl; return; }
+                
+                cout << "  Nome: "; getline(cin, nome);
+                
+                do {
+                    cout << "  Idade: "; cin >> idade;
+                    if (!cin || idade < 0 || idade > 120) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Idade invalida, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || idade < 0 || idade > 120);
+                cin.ignore();
+                
+                do {
+                    cout << "  Genero (1-M / 0-F): "; cin >> g;
+                    if (!cin || (g != 0 && g != 1)) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Genero invalido, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || (g != 0 && g != 1));
                 genero = (g == 1);
                 cin.ignore();
-                cout << "digite o CPF" << endl;
-                getline(cin, CPF);
-                if (cpfExiste(CPF)){ cout << "CPF ja cadastrado." << endl; return; }
-                cout << "digite a altura e o peso" << endl;
-                cin >> altura >> peso;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
-                cout << "digite o pagamento mensal" << endl;
-                cin >> pagamento;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
-                cout << "digite a data do contrato no formato: dia/mes/ano" << endl;
-                cin >> dia >> barra >> mes >> barra >> ano;
-                if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Entrada invalida." << endl; return; }
+                
+                do {
+                    cout << "  CPF: "; getline(cin, CPF);
+                    if (cpfExiste(CPF)) {
+                        textcolor(VERMELHO_CLARO); cout << "  CPF ja cadastrado, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (cpfExiste(CPF));
+                
+                do {
+                    cout << "  Altura (ex: 1.75): "; cin >> altura;
+                    if (!cin || altura <= 0) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Altura invalida, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || altura <= 0);
+                
+                do {
+                    cout << "  Peso (ex: 70.5): "; cin >> peso;
+                    if (!cin || peso <= 0) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Peso invalido, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || peso <= 0);
                 cin.ignore();
-                cout << "digite a matricula" << endl;
-                getline(cin, matricula);
-                if (matriculaExiste(matricula)){ cout << "Matricula ja cadastrada." << endl; return; }
+                
+                do {
+                    cout << "  Pagamento Mensal: "; cin >> pagamento;
+                    if (!cin || pagamento < 0) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Pagamento invalido, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || pagamento < 0);
+                
+                do {
+                    cout << "  Data Contrato (dia/mes/ano): "; cin >> dia >> barra >> mes >> barra >> ano;
+                    if (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900) {
+                        cin.clear(); cin.ignore(10000, '\n');
+                        textcolor(VERMELHO_CLARO); cout << "  Data invalida, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900);
+                cin.ignore();
+                
+                do {
+                    cout << "  Matricula: "; getline(cin, matricula);
+                    if (matriculaExiste(matricula)) {
+                        textcolor(VERMELHO_CLARO); cout << "  Matricula ja cadastrada, tente novamente!\n"; textcolor(PADRAO);
+                    }
+                } while (matriculaExiste(matricula));
+                
                 povo.push_back(new cliente(nome, genero, idade, altura, peso, CPF, dia, mes, ano, pagamento, matricula));
             }
             recalcularBest();
+            textcolor(VERDE_CLARO);
+            cout << "\n  Cadastro realizado com sucesso!\n";
+            textcolor(PADRAO);
         }
 
         void info(int input){
             system("cls");
-            if(input >= 0 && input < (int)povo.size() ){povo[input]->print();}
+            if(input >= 0 && input < (int)povo.size() ){
+                textcolor(CIANO_CLARO);
+                cout << "\n  === DETALHES DO REGISTRO ===\n\n";
+                textcolor(PADRAO);
+                povo[input]->print();
+            }
         }
 
         int Pesquisar(string nome){
             string b = minusculo(nome);
             if (b.empty()){
-                cout << "Busca vazia." << endl;
+                textcolor(VERMELHO_CLARO);
+                cout << "  Busca vazia.\n";
+                textcolor(PADRAO);
                 return -1;
             }
             vector<int> achados;
@@ -269,17 +448,21 @@ class crud{
                 }
             }
             if(achados.empty()){
-                cout << "Nenhum registro encontrado." << endl;
+                textcolor(VERMELHO_CLARO);
+                cout << "  Nenhum registro encontrado.\n";
+                textcolor(PADRAO);
                 return -1;
             }
             if(achados.size() == 1){
                 return achados[0];
             }
-            cout << "Foram encontrados varios registros:" << endl;
-            cout << "Escolha o numero (0 para cancelar): \n";
+            textcolor(AMARELO_CLARO);
+            cout << "  Foram encontrados varios registros:\n";
+            textcolor(PADRAO);
+            cout << "  Escolha o numero (0 para cancelar): \n";
             for(int k=0; k<(int)achados.size(); k++){
                 int i = achados[k];
-                cout << k+1 << " - ";
+                cout << "  [" << k+1 << "] ";
                 cout << povo[i]->nom() << " - ";
                 cout << (povo[i]->type()=='$' ? "Funcionario" : "Cliente")<< endl;
             }
@@ -291,103 +474,113 @@ class crud{
             if(invalido) return -1;
             return achados[esc-1];
         }
-
-        int pesquisar(){
-            string busca;
-            cout << "Nome (ou parte do nome) a pesquisar: ";
-            getline(cin >> ws, busca);
-            return Pesquisar(busca);
-        }
-
+        
         void alterar(){
-            system("cls");
-            int idx = pesquisar();
+            cabecalho("ALTERAR REGISTRO");
+            string busca;
+            cout << "  Nome a pesquisar: ";
+            getline(cin >> ws, busca);
+            int idx = Pesquisar(busca);
             if(idx < 0) return;
-
             bool sair = false;
             bool mudou = false;
             while(!sair){
                 system("cls");
-                cout << "Cadastro atual:" << endl;
+                textcolor(CIANO_CLARO);
+                cout << "\n  === ALTERANDO REGISTRO ===\n\n";
+                textcolor(PADRAO);
                 povo[idx]->print();
-                cout << "\n\nO que deseja alterar?\n";
-                cout << "1- Nome\n";
-                cout << "2- Idade\n";
-                cout << "3- Genero (1-M / 0-F)\n";
-                cout << "4- CPF\n";
-                cout << "5- Altura\n";
-                cout << "6- Peso\n";
-                cout << "7- Data\n";
+                textcolor(AMARELO_CLARO);
+                cout << "\n  O que deseja alterar?\n";
+                textcolor(PADRAO);
+                cout << "  [1] Nome\n  [2] Idade\n  [3] Genero\n  [4] CPF\n  [5] Altura\n  [6] Peso\n  [7] Data\n";
                 if(povo[idx]->tipo == '$'){
-                    cout << "8- Salario\n";
-                    cout << "9- Rating\n";
-                    cout << "a- Cargo\n";
+                    cout << "  [8] Salario\n  [9] Rating\n  [a] Cargo\n";
                 } else {
-                    cout << "8- Pagamento\n";
-                    cout << "9- Matricula\n";
-                }
-                cout << "0- Salvar e sair\n";
-
+                    cout << "  [8] Pagamento\n  [9] Matricula\n";}
+                cout << "  [0] Salvar e sair\n\n  Opcao: ";
                 char opc = getch();
-
+                cout << opc << "\n";
                 switch(opc){
                     case '1':
-                        cout << "\nNovo nome: ";
+                        cout << "  Novo nome: ";
                         getline(cin >> ws, povo[idx]->nome);
                         mudou = true;
                         break;
                     case '2': {
-                        int novaIdade;
-                        cout << "\nNova idade: ";
-                        cin >> novaIdade;
-                        if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Invalido." << endl; break; }
-                        povo[idx]->idade = novaIdade;
+                        do {
+                            cout << "  Nova idade: "; cin >> povo[idx]->idade;
+                            if (!cin || povo[idx]->idade < 0 || povo[idx]->idade > 120) {
+                                cin.clear(); cin.ignore(10000, '\n');
+                                textcolor(VERMELHO_CLARO); cout << "  Idade invalida, tente novamente!\n"; textcolor(PADRAO);
+                            }
+                        } while (!cin || povo[idx]->idade < 0 || povo[idx]->idade > 120);
+                        cin.ignore();
                         mudou = true;
-                        break;
-                    }
+                        break;}
                     case '3': {
                         int g;
-                        cout << "\nNovo genero (1-M / 0-F): ";
-                        cin >> g;
-                        if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Invalido." << endl; break; }
-                        if (g == 0 || g == 1) { povo[idx]->genero = (g == 1); mudou = true; }
-                        else cout << "\nGenero invalido." << endl;
-                        break;
-                    }
+                        do {
+                            cout << "  Novo genero (1-M / 0-F): "; cin >> g;
+                            if (!cin || (g != 0 && g != 1)) {
+                                cin.clear(); cin.ignore(10000, '\n');
+                                textcolor(VERMELHO_CLARO); cout << "  Genero invalido, tente novamente!\n"; textcolor(PADRAO);
+                            }
+                        } while (!cin || (g != 0 && g != 1));
+                        povo[idx]->genero = (g == 1);
+                        cin.ignore();
+                        mudou = true;
+                        break;}
                     case '4': {
-                        cout << "\nNovo CPF: ";
                         string novoCPF;
-                        getline(cin >> ws, novoCPF);
-                        if (cpfExiste(novoCPF, idx)) cout << "\nCPF ja cadastrado." << endl;
-                        else { povo[idx]->CPF = novoCPF; mudou = true; }
-                        break;
-                    }
+                        do {
+                            cout << "  Novo CPF: "; getline(cin >> ws, novoCPF);
+                            if (cpfExiste(novoCPF, idx)) {
+                                textcolor(VERMELHO_CLARO); cout << "  CPF ja cadastrado, tente novamente!\n"; textcolor(PADRAO);
+                            }
+                        } while (cpfExiste(novoCPF, idx));
+                        povo[idx]->CPF = novoCPF;
+                        mudou = true;
+                        break;}
                     case '5': {
                         float novaAltura;
-                        cout << "\nNova altura: ";
-                        cin >> novaAltura;
-                        if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Invalido." << endl; break; }
+                        do {
+                            cout << "  Nova altura: "; cin >> novaAltura;
+                            if (!cin || novaAltura <= 0) {
+                                cin.clear(); cin.ignore(10000, '\n');
+                                textcolor(VERMELHO_CLARO); cout << "  Altura invalida, tente novamente!\n"; textcolor(PADRAO);
+                            }
+                        } while (!cin || novaAltura <= 0);
                         povo[idx]->altura = novaAltura;
                         if(povo[idx]->tipo == '#') dynamic_cast<cliente*>(povo[idx])->calcularIMC();
                         mudou = true;
-                        break;
-                    }
+                        break;}
                     case '6': {
                         float novoPeso;
-                        cout << "\nNovo peso: ";
-                        cin >> novoPeso;
-                        if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Invalido." << endl; break; }
+                        do {
+                            cout << "  Novo peso: "; cin >> novoPeso;
+                            if (!cin || novoPeso <= 0) {
+                                cin.clear(); cin.ignore(10000, '\n');
+                                textcolor(VERMELHO_CLARO); cout << "  Peso invalido, tente novamente!\n"; textcolor(PADRAO);
+                            }
+                        } while (!cin || novoPeso <= 0);
                         povo[idx]->peso = novoPeso;
                         if(povo[idx]->tipo == '#') dynamic_cast<cliente*>(povo[idx])->calcularIMC();
                         mudou = true;
-                        break;
-                    }
+                        break;}
                     case '7': {
                         int dia = 0, mes = 0, ano = 0;
                         char barra;
-                        cout << "\nNova data (dia/mes/ano): ";
-                        cin >> dia >> barra >> mes >> barra >> ano;
-                        if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Invalido." << endl; break; }
+                        do {
+                            cout << "  Nova data (dia/mes/ano): "; cin >> dia >> barra >> mes >> barra >> ano;
+                            if (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900) {
+                                cin.clear(); cin.ignore(10000, '\n');
+                                textcolor(VERMELHO_CLARO); 
+                                cout << "  Data invalida, tente novamente!\n"; 
+                                textcolor(PADRAO);
+                            }
+                        } while (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900);
+                        
                         if(povo[idx]->tipo == '$'){
                             funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
                             f->datadecontratacao.dia = dia;
@@ -399,83 +592,99 @@ class crud{
                             c->contratoprazo.mes = mes;
                             c->contratoprazo.ano = ano;
                         }
+                        cin.ignore();
                         mudou = true;
-                        break;
-                    }
+                        break;}
                     case '8': {
                         if(povo[idx]->tipo == '$'){
                             funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
-                            int novoSalario;
-                            cout << "\nNovo salario: ";
-                            cin >> novoSalario;
-                            if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Invalido." << endl; break; }
-                            f->salario = novoSalario;
+                            do {
+                                cout << "  Novo salario: "; cin >> f->salario;
+                                if (!cin || f->salario < 0) {
+                                    cin.clear(); cin.ignore(10000, '\n');
+                                    textcolor(VERMELHO_CLARO); cout << "  Salario invalido, tente novamente!\n"; textcolor(PADRAO);
+                                }
+                            } while (!cin || f->salario < 0);
                         } else {
                             cliente* c = dynamic_cast<cliente*>(povo[idx]);
-                            int novoPag;
-                            cout << "\nNovo pagamento: ";
-                            cin >> novoPag;
-                            if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Invalido." << endl; break; }
-                            c->pagamento = novoPag;
+                            do {
+                                cout << "  Novo pagamento: "; cin >> c->pagamento;
+                                if (!cin || c->pagamento < 0) {
+                                    cin.clear(); cin.ignore(10000, '\n');
+                                    textcolor(VERMELHO_CLARO); cout << "  Pagamento invalido, tente novamente!\n"; textcolor(PADRAO);
+                                }
+                            } while (!cin || c->pagamento < 0);
                         }
+                        cin.ignore();
                         mudou = true;
-                        break;
-                    }
+                        break;}
                     case '9': {
                         if(povo[idx]->tipo == '$'){
                             funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
-                            float novoRating;
-                            cout << "\nNovo rating: ";
-                            cin >> novoRating;
-                            if (!cin) { cin.clear(); cin.ignore(10000, '\n'); cout << "Invalido." << endl; break; }
-                            f->rating = novoRating;
+                            do {
+                                cout << "  Novo rating: "; cin >> f->rating;
+                                if (!cin || f->rating < 0 || f->rating > 10) {
+                                    cin.clear(); cin.ignore(10000, '\n');
+                                    textcolor(VERMELHO_CLARO); cout << "  Rating deve ser entre 0 e 10, tente novamente!\n"; textcolor(PADRAO);
+                                }
+                            } while (!cin || f->rating < 0 || f->rating > 10);
                             recalcularBest();
                             mudou = true;
                         } else {
                             cliente* c = dynamic_cast<cliente*>(povo[idx]);
-                            cout << "\nNova matricula: ";
                             string novaMat;
-                            getline(cin >> ws, novaMat);
-                            if (matriculaExiste(novaMat, idx)) cout << "\nMatricula ja cadastrada." << endl;
-                            else { c->matricula = novaMat; mudou = true; }
+                            do {
+                                cout << "  Nova matricula: "; getline(cin >> ws, novaMat);
+                                if (matriculaExiste(novaMat, idx)) {
+                                    textcolor(VERMELHO_CLARO); cout << "  Matricula ja cadastrada, tente novamente!\n"; textcolor(PADRAO);
+                                }
+                            } while (matriculaExiste(novaMat, idx));
+                            c->matricula = novaMat;
+                            mudou = true;
                         }
-                        break;
-                    }
+                        cin.ignore();
+                        break;}
                     case 'a': {
                         if(povo[idx]->tipo == '$'){
                             funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
-                            cout << "\nNovo cargo: ";
+                            cout << "  Novo cargo: ";
                             getline(cin >> ws, f->cargo);
                             mudou = true;
                         }
-                        break;
-                    }
+                        break;}
                     case '0':
                         sair = true;
                         break;
                     default:
-                        cout << "\nOpcao invalida.\n";
-                }
-            }
-            if (mudou) cout << "\nCadastro alterado com sucesso!" << endl;
+                        textcolor(VERMELHO_CLARO);
+                        cout << "  Opcao invalida.\n";
+                        textcolor(PADRAO);}
+                Sleep(800);}
+            if (mudou) {
+                textcolor(VERDE_CLARO);
+                cout << "\n  Cadastro alterado com sucesso!\n";
+                textcolor(PADRAO);}
         }
 
         void remover() {
-            system("cls");
-
+            cabecalho("REMOVER REGISTRO");
             if (povo.empty()) {
-                cout << "Nenhum registro cadastrado.\n";
-                return;
-            }
-
-            int i = pesquisar();
+                textcolor(VERMELHO_CLARO);
+                cout << "  Nenhum registro cadastrado.\n";
+                textcolor(PADRAO);
+                return;}
+            string busca;
+            cout << "  Nome a pesquisar: ";
+            getline(cin >> ws, busca);
+            int i = Pesquisar(busca);
             if (i < 0 || i >= (int)povo.size()) return;  
-
             string removido = povo[i]->nom();   
             delete povo[i];                     
             povo.erase(povo.begin() + i);        
             recalcularBest();
-            cout << removido << " removido(a).\n";
+            textcolor(VERDE_CLARO);
+            cout << "\n  " << removido << " removido(a) com sucesso!\n";
+            textcolor(PADRAO);
         }
 
         void relatorio(){
@@ -491,34 +700,85 @@ class crud{
                     receita += c->pagamento;
                 }
             }
-            system("cls");
+            cabecalho("RELATORIO GERAL");
+            textcolor(CIANO_CLARO); 
+            cout << "  Academia: "; 
+            textcolor(PADRAO); 
+            cout << nomeAcademia << "\n";
+            textcolor(CIANO_CLARO); 
+            cout << "  Endereco: "; 
+            textcolor(PADRAO); 
+            cout << endereco << "\n";
+            textcolor(CIANO_CLARO); 
+            cout << "  CNPJ: "; 
+            textcolor(PADRAO); 
+            cout << cnpj << "\n";
+            textcolor(CIANO_CLARO); 
+            cout << "  Data de Abertura: "; 
+            textcolor(PADRAO); 
+            dataAbertura.mostrar(); 
+            textcolor(CIANO_CLARO); 
+            cout << "\n  -------------------------------------------------\n";
+            textcolor(CIANO_CLARO);
+            cout << "  Quantidade de funcionarios: "; 
+            textcolor(PADRAO); 
+            cout << funcionarios << "\n";
+            textcolor(CIANO_CLARO); 
+            cout << "  Quantidade de clientes: "; 
+            textcolor(PADRAO); 
+            cout << clientes << "\n";
             
-            cout << "=== RELATORIO GERAL ===" << endl;
-            cout << "Academia: " << nomeAcademia << endl;
-            cout << "Endereco: " << endereco << endl;
-            cout << "CNPJ: " << cnpj << endl;
-            cout << "Data de Abertura: "; dataAbertura.mostrar(); cout << "\n\n";
-            
-            cout<< "Quantidade de funcionarios: "<< funcionarios<< endl;
-            cout<< "Quantidade de clientes: "<< clientes<< endl;
-            if (funcionario::best != nullptr)
-                cout<< "Funcionario do mes: "<< funcionario::best->nome<< endl;
-            else
-                cout<< "Funcionario do mes: N/A"<< endl;
-            cout<< "Receita total: "<< receita<< endl;
-            cout<< "Despesas totais: "<< despesas<< endl;
-            if (funcionarios > 0){
-                cout<< "Receita media por funcionario: "<< receita/funcionarios<< endl;
-                cout<< "Salario Medio: "<< despesas/funcionarios<< endl;
+            if (funcionario::best != nullptr) {
+                textcolor(CIANO_CLARO); 
+                cout << "  Funcionario do mes: "; 
+                textcolor(PADRAO);
+                cout << funcionario::best->nome << " (Rating: " << funcionario::best->rating << ")\n";
+            } else {
+                textcolor(CIANO_CLARO); 
+                cout << "  Funcionario do mes: "; 
+                textcolor(PADRAO); 
+                cout << "N/A\n";
             }
-            cout<< "Lucro: "<< receita-despesas<<endl;
+            textcolor(CIANO_CLARO);
+            cout << "  -------------------------------------------------\n";            
+            textcolor(CIANO_CLARO);
+            cout << "  Receita total: "; 
+            textcolor(PADRAO); 
+            cout << "R$ " << receita << "\n";
+            textcolor(CIANO_CLARO); 
+            cout << "  Despesas totais: "; 
+            textcolor(PADRAO); 
+            cout << "R$ " << despesas << "\n";
+            
+            if (funcionarios > 0){
+                textcolor(CIANO_CLARO); 
+                cout << "  Receita media por funcionario: "; 
+                textcolor(PADRAO); 
+                cout << "R$ " << receita/funcionarios << "\n";
+                textcolor(CIANO_CLARO); 
+                cout << "  Salario Medio: "; 
+                textcolor(PADRAO); 
+                cout << "R$ " << despesas/funcionarios << "\n";
+            }
+            if(receita - despesas >= 0) {
+                textcolor(VERDE_CLARO); 
+                cout << "  Lucro: "; 
+                textcolor(PADRAO); 
+                cout << "R$ " << receita-despesas << "\n";
+            }else {
+                textcolor(VERMELHO_CLARO); 
+                cout << "  Prejuizo: "; 
+                textcolor(PADRAO); 
+                cout << "R$ " << receita-despesas << "\n";}
         }
 
-        ~crud(){
+                ~crud(){
             arquivo.close();
-            {
-                ofstream out("registro.txt", ios::out | ios::trunc);
-            }
+            ofstream out("registro.txt", ios::out | ios::trunc);
+            out << "CONFIG" << endl;
+            out << nomeAcademia << endl;
+            out << endereco << endl;
+            out.close();
             for(int i=0; i<(int)povo.size(); i++){
                 povo[i]->arquivo();
             }

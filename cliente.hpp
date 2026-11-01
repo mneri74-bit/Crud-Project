@@ -40,7 +40,7 @@ class cliente : public virtual pessoa {
             arquivo<<matricula<<endl;
             arquivo.close();
         }
-        void print(){
+        void print() override {
             this->pessoa::print();
             cout<<"IMC: "<< round(IMC * 10) / 10 << endl;
             cout<<"Matricula: "<< matricula<< "\nTermos do contrato:\nPrazo de validade: "; contratoprazo.mostrar(); cout<< "\nPagamento por mes: "<< pagamento<<endl;
