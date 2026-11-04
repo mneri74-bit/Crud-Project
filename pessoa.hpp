@@ -55,16 +55,24 @@ class pessoa {
             cout << (tipo == '$' ? "Funcionario" : "Cliente");
             textcolor(PADRAO);
             cout << " - " << nome << " - CPF: " << CPF << "\n";
-            
-            textcolor(AMARELO_CLARO); cout << "Idade: "; textcolor(PADRAO); cout << idade;
-            cout << " || ";
-            textcolor(AMARELO_CLARO); cout << "Sexo: "; textcolor(PADRAO); 
+            textcolor(AMARELO_CLARO); 
+            cout << "Idade: "; 
+            textcolor(PADRAO); 
+            cout << idade<< endl;
+            textcolor(AMARELO_CLARO); 
+            cout << "Sexo: "; 
+            textcolor(PADRAO); 
             if(genero) cout << "Masculino"; else{ cout << "Feminino"; }
             cout << "\n";
-            
-            textcolor(AMARELO_CLARO); cout << "Altura: "; textcolor(PADRAO); cout << altura;
-            cout << " || ";
-            textcolor(AMARELO_CLARO); cout << "Peso: "; textcolor(PADRAO); cout << peso << endl;
+            textcolor(AMARELO_CLARO); 
+            cout << "Altura: "; 
+            textcolor(PADRAO); 
+            cout << altura;
+            cout << "\n";
+            textcolor(AMARELO_CLARO); 
+            cout << "Peso: "; 
+            textcolor(PADRAO); 
+            cout << peso << endl;
         }
 
         virtual ~pessoa() {}    

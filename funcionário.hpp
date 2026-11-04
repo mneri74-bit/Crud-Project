@@ -52,7 +52,7 @@ class funcionario : public virtual pessoa {
             cout << "Salario: "; 
             textcolor(PADRAO);
             cout << salario;
-            cout << " || ";
+            cout << "\n";
             textcolor(AMARELO_CLARO); 
             cout << "Rating: "; 
             textcolor(PADRAO); 

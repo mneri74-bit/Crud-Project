@@ -44,7 +44,6 @@ class cliente : public virtual pessoa {
             textcolor(AMARELO_CLARO); cout << "IMC: "; textcolor(PADRAO); cout << round(IMC * 10) / 10 << endl;
             textcolor(AMARELO_CLARO); cout << "Matricula: "; textcolor(PADRAO); cout << matricula << "\n";
             textcolor(CIANO_CLARO); cout << "Termos do contrato:\n";
-            
             textcolor(AMARELO_CLARO); cout << "Prazo de validade: "; textcolor(PADRAO); contratoprazo.mostrar(); cout << "\n";
             
             textcolor(AMARELO_CLARO); cout << "Pagamento por mes: "; textcolor(PADRAO); cout << pagamento << endl;

@@ -215,7 +215,9 @@ class crud{
             if (input == 0) return;
             input--; 
             info(input);
+            textcolor(CINZA_ESCURO);
             cout << "\n\n  Pressione ENTER para voltar ao menu...";
+            textcolor(PADRAO);
             while (1) {
             if (_kbhit()) {
                 int c = _getch();
