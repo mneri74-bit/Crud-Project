@@ -6,6 +6,26 @@
 #include <cstdlib>
 #include <windows.h>
 using namespace std;
+#define PRETO 0
+#define AZUL_ESCURO 1
+#define VERDE_ESCURO 2
+#define CIANO_ESCURO 3
+#define VERMELHO_ESCURO 4
+#define ROXO 5
+#define AMARELO_ESCURO 6
+#define PADRAO 7
+#define CINZA_ESCURO 8
+#define AZUL_CLARO 9
+#define VERDE_CLARO 10
+#define CIANO_CLARO 11
+#define VERMELHO_CLARO 12
+#define ROSA_MAGENTA 13
+#define AMARELO_CLARO 14
+#define BRANCO 15
+
+inline void textcolor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
 class pessoa {
     friend class crud;
     protected:
@@ -31,12 +51,22 @@ class pessoa {
         } 
         virtual void arquivo()=0;
         virtual void print() {
-            cout << (tipo == '$' ? "Funcionario" : "Cliente") 
-                 << " - " << nome << " - CPF: " << CPF 
-                 << "\nIdade: " << idade << " || Sexo: ";
+            textcolor(CIANO_CLARO);
+            cout << (tipo == '$' ? "Funcionario" : "Cliente");
+            textcolor(PADRAO);
+            cout << " - " << nome << " - CPF: " << CPF << "\n";
+            
+            textcolor(AMARELO_CLARO); cout << "Idade: "; textcolor(PADRAO); cout << idade;
+            cout << " || ";
+            textcolor(AMARELO_CLARO); cout << "Sexo: "; textcolor(PADRAO); 
             if(genero) cout << "Masculino"; else{ cout << "Feminino"; }
-            cout << "\nAltura: " << altura << " || Peso: " << peso << endl;
+            cout << "\n";
+            
+            textcolor(AMARELO_CLARO); cout << "Altura: "; textcolor(PADRAO); cout << altura;
+            cout << " || ";
+            textcolor(AMARELO_CLARO); cout << "Peso: "; textcolor(PADRAO); cout << peso << endl;
         }
+
         virtual ~pessoa() {}    
 };
 

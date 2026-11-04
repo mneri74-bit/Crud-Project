@@ -17,28 +17,7 @@
 #pragma execution_character_set("utf-8")
 using namespace std;
 
-// Legendas de cores
-#define PRETO 0
-#define AZUL_ESCURO 1
-#define VERDE_ESCURO 2
-#define CIANO_ESCURO 3
-#define VERMELHO_ESCURO 4
-#define ROXO 5
-#define AMARELO_ESCURO 6
-#define PADRAO 7
-#define CINZA_ESCURO 8
-#define AZUL_CLARO 9
-#define VERDE_CLARO 10
-#define CIANO_CLARO 11
-#define VERMELHO_CLARO 12
-#define ROSA_MAGENTA 13
-#define AMARELO_CLARO 14
-#define BRANCO 15
 
-// Função nativa do Windows para colorir o texto
-void textcolor(int color) {
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-}
 
 int getcursor(bool eixo) {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);

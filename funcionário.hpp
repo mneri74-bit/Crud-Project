@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 class funcionario : public virtual pessoa {
     friend class crud;
     private:                    // ALTERADO: de protected para private (exigência da spec)
@@ -45,12 +44,26 @@ class funcionario : public virtual pessoa {
         }
         void print() override { 
             this->pessoa::print();
-            cout << "Cargo: " << cargo << endl;
-            cout << "Salario: " << salario << " || Rating: " << rating << endl;
-            cout << "Data de contratacao: ";
+            textcolor(AMARELO_CLARO); 
+            cout << "Cargo: "; 
+            textcolor(PADRAO); 
+            cout << cargo << endl;
+            textcolor(AMARELO_CLARO); 
+            cout << "Salario: "; 
+            textcolor(PADRAO);
+            cout << salario;
+            cout << " || ";
+            textcolor(AMARELO_CLARO); 
+            cout << "Rating: "; 
+            textcolor(PADRAO); 
+            cout << rating << endl;
+            textcolor(AMARELO_CLARO); 
+            cout << "Data de contratacao: "; 
+            textcolor(PADRAO);
             datadecontratacao.mostrar();
             cout << endl;
         }
+
         static funcionario* getGOAT(){ return best; }
 };
 

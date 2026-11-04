@@ -6,7 +6,6 @@
 #include "pessoa.hpp"
 #include "data.hpp"
 using namespace std;
-
 class cliente : public virtual pessoa {
     friend class crud;
     private:
@@ -42,8 +41,14 @@ class cliente : public virtual pessoa {
         }
         void print() override {
             this->pessoa::print();
-            cout<<"IMC: "<< round(IMC * 10) / 10 << endl;
-            cout<<"Matricula: "<< matricula<< "\nTermos do contrato:\nPrazo de validade: "; contratoprazo.mostrar(); cout<< "\nPagamento por mes: "<< pagamento<<endl;
+            textcolor(AMARELO_CLARO); cout << "IMC: "; textcolor(PADRAO); cout << round(IMC * 10) / 10 << endl;
+            textcolor(AMARELO_CLARO); cout << "Matricula: "; textcolor(PADRAO); cout << matricula << "\n";
+            textcolor(CIANO_CLARO); cout << "Termos do contrato:\n";
+            
+            textcolor(AMARELO_CLARO); cout << "Prazo de validade: "; textcolor(PADRAO); contratoprazo.mostrar(); cout << "\n";
+            
+            textcolor(AMARELO_CLARO); cout << "Pagamento por mes: "; textcolor(PADRAO); cout << pagamento << endl;
         }
+
 };
 #endif
