@@ -7,11 +7,11 @@
 #include "crud.hpp"
 #include <conio.h>
 #include <windows.h>
+#pragma execution_character_set("utf-8")
 using namespace std;
 
 int main() {
     crud academia;
-
     char input = 0;
     while (input != '7') {
         system("cls");
@@ -26,24 +26,43 @@ int main() {
         cout << "  |                                                 |\n";
         cout << "  |   ";
         textcolor(VERDE_CLARO);
-        cout << "1"; textcolor(PADRAO); cout << " - Inserir novo cadastro                      |\n";
+        cout << "1"; textcolor(PADRAO); 
+        cout << " - Inserir novo cadastro                     |\n";
         cout << "  |   ";
-        textcolor(VERDE_CLARO); cout << "2"; textcolor(PADRAO); cout << " - Listar todos os registros                 |\n";
+        textcolor(VERDE_CLARO); 
+        cout << "2"; 
+        textcolor(PADRAO); 
+        cout << " - Listar todos os registros                 |\n";
         cout << "  |   ";
-        textcolor(VERDE_CLARO); cout << "3"; textcolor(PADRAO); cout << " - Exibir um registro (pesquisar)            |\n";
+        textcolor(VERDE_CLARO); 
+        cout << "3"; 
+        textcolor(PADRAO); 
+        cout << " - Exibir um registro (pesquisar)            |\n";
         cout << "  |   ";
-        textcolor(VERDE_CLARO); cout << "4"; textcolor(PADRAO); cout << " - Alterar um registro                       |\n";
+        textcolor(VERDE_CLARO); 
+        cout << "4"; 
+        textcolor(PADRAO); 
+        cout << " - Alterar um registro                       |\n";
         cout << "  |   ";
-        textcolor(VERDE_CLARO); cout << "5"; textcolor(PADRAO); cout << " - Remover um registro                       |\n";
+        textcolor(VERDE_CLARO); 
+        cout << "5"; 
+        textcolor(PADRAO); 
+        cout << " - Remover um registro                       |\n";
         cout << "  |   ";
-        textcolor(VERDE_CLARO); cout << "6"; textcolor(PADRAO); cout << " - Exibir relatorio geral                    |\n";
+        textcolor(VERDE_CLARO); 
+        cout << "6"; 
+        textcolor(PADRAO); 
+        cout << " - Exibir relatório geral                    |\n";
         cout << "  |   ";
-        textcolor(VERMELHO_CLARO); cout << "7"; textcolor(PADRAO); cout << " - Sair do sistema                           |\n";
+        textcolor(VERMELHO_CLARO); 
+        cout << "7"; 
+        textcolor(PADRAO); 
+        cout << " - Sair do sistema                           |\n";
         cout << "  |                                                 |\n";
         cout << "  +-------------------------------------------------+\n";
         
         textcolor(AMARELO_CLARO);
-        cout << "\n  Escolha uma opcao: ";
+        cout << "\n  Escolha uma opção: ";
         textcolor(PADRAO);
         
         input = getch();
@@ -64,7 +83,7 @@ int main() {
                 break;
         }
         
-        if(input >= '1' && input <= '6') {
+        if(input >= '1' && input <= '6' && input!= '3') {
             textcolor(CINZA_ESCURO);
             cout << "\n\n  Pressione ENTER para voltar ao menu...";
             textcolor(PADRAO);

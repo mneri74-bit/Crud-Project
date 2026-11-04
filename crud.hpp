@@ -14,6 +14,7 @@
 #include "cliente.hpp"
 #include "funcionário.hpp"
 #include "data.hpp"
+#pragma execution_character_set("utf-8")
 using namespace std;
 
 // Legendas de cores
@@ -39,6 +40,14 @@ void textcolor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
+int getcursor(bool eixo) {
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut == INVALID_HANDLE_VALUE) return -1;
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    if (!GetConsoleScreenBufferInfo(hOut, &info)) return -1;
+    return (eixo == 1) ? info.dwCursorPosition.X
+                       : info.dwCursorPosition.Y;
+}
 inline int gotoxy(int x, int y) {
     if(x >= 0 && y >= 0){
         COORD coord;
@@ -227,7 +236,12 @@ class crud{
             if (input == 0) return;
             input--; 
             info(input);
-        }
+            cout << "\n\n  Pressione ENTER para voltar ao menu...";
+            while (1) {
+            if (_kbhit()) {
+                int c = _getch();
+                if (c == '\r' || c == '\n') break;}}
+            }
 
         void add(){
             cabecalho("INSERIR NOVO CADASTRO");
@@ -247,6 +261,7 @@ class crud{
             textcolor(CIANO_CLARO);
             cout << "\n  === PREENCHIMENTO DE DADOS ===\n\n";
             textcolor(PADRAO);
+            int x,y;// coordenadas da pergunta
             char barra;
             string nome, CPF;
             bool genero;
@@ -257,80 +272,116 @@ class crud{
                 float rating = 0;
                 string cargo;
                 cout << "  Nome: "; 
-                getline(cin, nome);                
+                getline(cin, nome);     
+                x=getcursor(1);y=getcursor(0);           
                 do {
                     cout << "  Idade: "; cin >> idade;
-                    if (!cin || idade < 0 || idade > 120) {
+                    if (!cin || idade < 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Idade invalida, tente novamente!\n"; 
                         textcolor(PADRAO);
+                        idade=-1;
                     }
-                } while (!cin || idade < 0 || idade > 120);
+                } while (!cin || idade < 0);
                 cin.ignore();
+                x=getcursor(1);y=getcursor(0);
                 do {
-                    cout << "  Genero (1-M / 0-F): "; cin >> g;
+                    cout << "  Genero (0-M / 1-F): "; cin >> g;
                     if (!cin || (g != 0 && g != 1)) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Genero invalido, tente novamente!\n"; 
                         textcolor(PADRAO);
+
                     }
                 } while (!cin || (g != 0 && g != 1));
-                genero = (g == 1);
+                genero = (g == 0);
                 cin.ignore();
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  CPF: "; getline(cin, CPF);
                     if (cpfExiste(CPF)) {
                         textcolor(VERMELHO_CLARO); 
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                              ";   
+                        gotoxy(x, y);
                         cout << "  CPF ja cadastrado, tente novamente!\n"; 
                         textcolor(PADRAO);
                     }
                 } while (cpfExiste(CPF));
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Altura (ex: 1.75): "; cin >> altura;
                     if (!cin || altura <= 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Altura invalida, tente novamente!\n"; 
                         textcolor(PADRAO);
                     }
                 } while (!cin || altura <= 0);
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Peso (ex: 70.5): "; cin >> peso;
                     if (!cin || peso <= 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Peso invalido, tente novamente!\n"; 
                         textcolor(PADRAO);
+                        peso=-1;
                     }
                 } while (!cin || peso <= 0);
                 cin.ignore();
                 cout << "  Cargo: "; 
                 getline(cin, cargo);
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Salario: "; cin >> salario;
                     if (!cin || salario < 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Salario invalido, tente novamente!\n"; 
                         textcolor(PADRAO);
+                        salario=-1;
                     }
                 } while (!cin || salario < 0);
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Rating (0 a 10): "; cin >> rating;
                     if (!cin || rating < 0 || rating > 10) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Rating deve ser entre 0 e 10, tente novamente!\n"; 
                         textcolor(PADRAO);
+                        rating=-1;
                     }
                 } while (!cin || rating < 0 || rating > 10);
-                
+                x=getcursor(1);y=getcursor(0);                
                 do {
                     cout << "  Data Contratacao (dia/mes/ano): "; cin >> dia >> barra >> mes >> barra >> ano;
-                    if (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900) {
+                    if (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                                                ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO);
                          cout << "  Data invalida, tente novamente!\n"; 
                          textcolor(PADRAO);
@@ -342,77 +393,114 @@ class crud{
                 int pagamento = 0, dia = 0, mes = 0, ano = 0, g = -1;
                 string matricula;
                 cout << "  Nome: "; getline(cin, nome);
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Idade: "; cin >> idade;
-                    if (!cin || idade < 0 || idade > 120) {
+                    if (!cin || idade < 0) {
                         cin.clear(); cin.ignore(10000, '\n');
-                        textcolor(VERMELHO_CLARO); 
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y); 
+                        textcolor(VERMELHO_CLARO);
                         cout << "  Idade invalida, tente novamente!\n"; 
-                        textcolor(PADRAO);
+                        textcolor(PADRAO); 
+                        idade=-1;
                     }
-                } while (!cin || idade < 0 || idade > 120);
+                } while (!cin || idade < 0);
                 cin.ignore();
+                x=getcursor(1);y=getcursor(0);
                 do {
-                    cout << "  Genero (1-M / 0-F): "; cin >> g;
+                    cout << "  Genero (0-M / 1-F): "; cin >> g;
                     if (!cin || (g != 0 && g != 1)) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Genero invalido, tente novamente!\n"; 
                         textcolor(PADRAO);
+                        g=-1;
                     }
                 } while (!cin || (g != 0 && g != 1));
-                genero = (g == 1);
+                genero = (g == 0);
                 cin.ignore();
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  CPF: "; getline(cin, CPF);
                     if (cpfExiste(CPF)) {
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  CPF ja cadastrado, tente novamente!\n"; 
                         textcolor(PADRAO);
                     }
                 } while (cpfExiste(CPF));
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Altura (ex: 1.75): "; cin >> altura;
                     if (!cin || altura <= 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Altura invalida, tente novamente!\n";
                         textcolor(PADRAO);
+                        altura=-4;
                     }
                 } while (!cin || altura <= 0);
-                
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Peso (ex: 70.5): "; cin >> peso;
                     if (!cin || peso <= 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Peso invalido, tente novamente!\n"; 
-                        textcolor(PADRAO);}
+                        textcolor(PADRAO);
+                        peso=-1;}
                 } while (!cin || peso <= 0);
                 cin.ignore();
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Pagamento Mensal: "; cin >> pagamento;
                     if (!cin || pagamento < 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Pagamento invalido, tente novamente!\n"; 
                         textcolor(PADRAO);
+                        pagamento=-1;
                     }
                 } while (!cin || pagamento < 0);
+                x=getcursor(1);y=getcursor(0);
                 do {
                     cout << "  Data Contrato (dia/mes/ano): "; 
                     cin >> dia >> barra >> mes >> barra >> ano;
                     if (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 0) {
                         cin.clear(); cin.ignore(10000, '\n');
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Data invalida, tente novamente!\n"; 
                         textcolor(PADRAO);
                     }
                 } while (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 0);
                 cin.ignore();
+                x=getcursor(1);y=getcursor(0);
                 do {
+                    
                     cout << "  Matricula: "; getline(cin, matricula);
                     if (matriculaExiste(matricula)) {
+                        gotoxy(x, y);               
+                        cout<< "                                       \n                                      ";   
+                        gotoxy(x, y);
                         textcolor(VERMELHO_CLARO); 
                         cout << "  Matricula ja cadastrada, tente novamente!\n"; 
                         textcolor(PADRAO);
@@ -437,49 +525,63 @@ class crud{
         }
 
         int Pesquisar(string nome){
-            string b = minusculo(nome);
-            if (b.empty()){
-                textcolor(VERMELHO_CLARO);
-                cout << "  Busca vazia.\n";
-                textcolor(PADRAO);
-                return -1;
-            }
-            vector<int> achados;
-            for(int i=0; i<(int)povo.size(); i++){
-                string nomeMin = minusculo(povo[i]->nom());
-                if(nomeMin.find(b) == 0){
-                    achados.push_back(i);
-                }
-            }
-            if(achados.empty()){
-                textcolor(VERMELHO_CLARO);
-                cout << "  Nenhum registro encontrado.\n";
-                textcolor(PADRAO);
-                return -1;
-            }
-            if(achados.size() == 1){
-                return achados[0];
-            }
-            textcolor(AMARELO_CLARO);
-            cout << "  Foram encontrados varios registros:\n";
-            textcolor(PADRAO);
-            cout << "  Escolha o numero (0 para cancelar): \n";
-            for(int k=0; k<(int)achados.size(); k++){
-                int i = achados[k];
-                cout << "  [" << k+1 << "] ";
-                cout << povo[i]->nom() << " - ";
-                cout << (povo[i]->type()=='$' ? "Funcionario" : "Cliente")<< endl;
-            }
-            int esc;
-            cin >> esc;
-            bool invalido = !cin || esc < 1 || esc > (int)achados.size();
-            cin.clear();
-            cin.ignore(10000, '\n');
-            if(invalido) return -1;
-            return achados[esc-1];
+            int x,y, a;
+    string b = minusculo(nome);
+    if (b.empty()){
+        textcolor(VERMELHO_CLARO);
+        cout << "  Busca vazia.\n";
+        textcolor(PADRAO);
+        return -1;}
+    vector<int> achados;
+    if (b == "//") {
+        // Adiciona todo mundo no vetor e deixa o fluxo seguir
+        for(int i=0; i < (int)povo.size(); i++){
+            achados.push_back(i);
         }
+    } else {
+        for(int i=0; i < (int)povo.size(); i++){
+            string nomeMin = minusculo(povo[i]->nom());
+            if(nomeMin.find(b) == 0){
+                achados.push_back(i);
+            }
+        }
+    }
+    if(achados.empty()){
+        textcolor(VERMELHO_CLARO);
+        cout << "  Nenhum registro encontrado.\n";
+        textcolor(PADRAO);
+        return -1;}
+    if(achados.size() == 1){
+        return achados[0];}
+    textcolor(AMARELO_CLARO);
+    cout << "  Foram encontrados varios registros:\n";
+    textcolor(PADRAO);
+    cout << "  Escolha o numero (0 para cancelar): ";
+    x=getcursor(1);y=getcursor(0);
+    cout<< endl;
+    for(int k=0; k < (int)achados.size(); k++){
+        int i = achados[k];
+        cout << "  [" << k+1 << "] ";
+        cout << povo[i]->nom() << " - ";
+        cout << (povo[i]->type()=='$' ? "Funcionario" : "Cliente") << endl;
+            a=getcursor(0);}
+        gotoxy(x,y);
+    int esc;
+    if (!(cin >> esc)) {
+        cin.clear();
+        cin.ignore(10000, '\n');
+        gotoxy(0,a+ 2);
+        return -1;}
+    cin.ignore(10000, '\n');
+    if (esc < 1 || esc > (int)achados.size()) {
+        gotoxy(0, a + 2);
+        return -1;
+    }
+    return achados[esc-1];
+}
         
         void alterar(){
+            int x,y;
             cabecalho("ALTERAR REGISTRO");
             string busca;
             cout << "  Nome a pesquisar: ";
@@ -512,26 +614,35 @@ class crud{
                         mudou = true;
                         break;
                     case '2': {
+                        x=getcursor(1);y=getcursor(0);
                         do {
                             cout << "  Nova idade: "; cin >> povo[idx]->idade;
-                            if (!cin || povo[idx]->idade < 0 || povo[idx]->idade > 120) {
+                            if (!cin || povo[idx]->idade < 0) {
                                 cin.clear(); cin.ignore(10000, '\n');
+                                gotoxy(x, y);               
+                                cout<< "                                       \n                                             ";   
+                                gotoxy(x, y);
                                 textcolor(VERMELHO_CLARO); 
                                 cout << "  Idade invalida, tente novamente!\n"; 
                                 textcolor(PADRAO);}
-                        } while (!cin || povo[idx]->idade < 0 || povo[idx]->idade > 120);
+                        } while (!cin || povo[idx]->idade < 0 );
                         cin.ignore();
                         mudou = true;
                         break;}
                     case '3': {
                         int g;
+                        x=getcursor(1);y=getcursor(0);
                         do {
                             cout << "  Novo genero (0-M / 1-F): "; cin >> g;
                             if (!cin || (g != 0 && g != 1)) {
                                 cin.clear(); cin.ignore(10000, '\n');
+                                gotoxy(x, y);               
+                                cout<< "                                       \n                                      ";   
+                                gotoxy(x, y);
                                 textcolor(VERMELHO_CLARO); 
                                 cout << "  Genero invalido, tente novamente!\n"; 
                                 textcolor(PADRAO);
+                                g=-1;
                             }
                         } while (!cin || (g != 0 && g != 1));
                         povo[idx]->genero = (g == 0);
@@ -540,9 +651,13 @@ class crud{
                         break;}
                     case '4': {
                         string novoCPF;
+                        x=getcursor(1);y=getcursor(0);
                         do {
                             cout << "  Novo CPF: "; getline(cin >> ws, novoCPF);
                             if (cpfExiste(novoCPF, idx)) {
+                                gotoxy(x, y);               
+                                cout<< "                                       \n                                      ";   
+                                gotoxy(x, y);
                                 textcolor(VERMELHO_CLARO); 
                                 cout << "  CPF ja cadastrado, tente novamente!\n"; 
                                 textcolor(PADRAO);
@@ -553,10 +668,14 @@ class crud{
                         break;}
                     case '5': {
                         float novaAltura;
+                        x=getcursor(1);y=getcursor(0);
                         do {
                             cout << "  Nova altura: "; cin >> novaAltura;
                             if (!cin || novaAltura <= 0) {
                                 cin.clear(); cin.ignore(10000, '\n');
+                                gotoxy(x, y);               
+                                cout<< "                                       \n                                      ";   
+                                gotoxy(x, y);
                                 textcolor(VERMELHO_CLARO); 
                                 cout << "  Altura invalida, tente novamente!\n"; 
                                 textcolor(PADRAO);
@@ -568,10 +687,14 @@ class crud{
                         break;}
                     case '6': {
                         float novoPeso;
+                        x=getcursor(1);y=getcursor(0);
                         do {
                             cout << "  Novo peso: "; cin >> novoPeso;
                             if (!cin || novoPeso <= 0) {
                                 cin.clear(); cin.ignore(10000, '\n');
+                                gotoxy(x, y);               
+                                cout<< "                                       \n                                      ";   
+                                gotoxy(x, y);
                                 textcolor(VERMELHO_CLARO); 
                                 cout << "  Peso invalido, tente novamente!\n"; 
                                 textcolor(PADRAO);}
@@ -583,15 +706,16 @@ class crud{
                     case '7': {
                         int dia = 0, mes = 0, ano = 0;
                         char barra;
+                        x=getcursor(1);y=getcursor(0);
                         do {
                             cout << "  Nova data (dia/mes/ano): "; cin >> dia >> barra >> mes >> barra >> ano;
-                            if (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900) {
+                            if (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 0) {
                                 cin.clear(); cin.ignore(10000, '\n');
                                 textcolor(VERMELHO_CLARO); 
                                 cout << "  Data invalida, tente novamente!\n"; 
                                 textcolor(PADRAO);
                             }
-                        } while (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900);
+                        } while (!cin || barra != '/' || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 0);
                         
                         if(povo[idx]->tipo == '$'){
                             funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
@@ -610,21 +734,29 @@ class crud{
                     case '8': {
                         if(povo[idx]->tipo == '$'){
                             funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
+                            x=getcursor(1);y=getcursor(0);
                             do {
                                 cout << "  Novo salario: "; cin >> f->salario;
                                 if (!cin || f->salario < 0) {
                                     cin.clear(); cin.ignore(10000, '\n');
+                                    gotoxy(x, y);               
+                                    cout<< "                                       \n                                      ";   
+                                    gotoxy(x, y);
                                     textcolor(VERMELHO_CLARO); 
                                     cout << "  Salario invalido, tente novamente!\n"; 
                                     textcolor(PADRAO);
                                 }
                             } while (!cin || f->salario < 0);
                         } else {
+                            x=getcursor(1);y=getcursor(0);
                             cliente* c = dynamic_cast<cliente*>(povo[idx]);
                             do {
                                 cout << "  Novo pagamento: "; cin >> c->pagamento;
                                 if (!cin || c->pagamento < 0) {
                                     cin.clear(); cin.ignore(10000, '\n');
+                                    gotoxy(x, y);               
+                                    cout<< "                                       \n                                      ";   
+                                    gotoxy(x, y);
                                     textcolor(VERMELHO_CLARO); 
                                     cout << "  Pagamento invalido, tente novamente!\n"; 
                                     textcolor(PADRAO);
@@ -636,11 +768,15 @@ class crud{
                         break;}
                     case '9': {
                         if(povo[idx]->tipo == '$'){
+                            x=getcursor(1);y=getcursor(0);
                             funcionario* f = dynamic_cast<funcionario*>(povo[idx]);
                             do {
                                 cout << "  Novo rating: "; cin >> f->rating;
                                 if (!cin || f->rating < 0 || f->rating > 10) {
                                     cin.clear(); cin.ignore(10000, '\n');
+                                    gotoxy(x, y);               
+                                    cout<< "                                       \n                                      ";   
+                                    gotoxy(x, y);
                                     textcolor(VERMELHO_CLARO); 
                                     cout << "  Rating deve ser entre 0 e 10, tente novamente!\n"; 
                                     textcolor(PADRAO);
@@ -650,10 +786,14 @@ class crud{
                             mudou = true;
                         } else {
                             cliente* c = dynamic_cast<cliente*>(povo[idx]);
+                            x=getcursor(1);y=getcursor(0);
                             string novaMat;
                             do {
                                 cout << "  Nova matricula: "; getline(cin >> ws, novaMat);
                                 if (matriculaExiste(novaMat, idx)) {
+                                    gotoxy(x, y);               
+                                    cout<< "                                       \n                                      ";   
+                                    gotoxy(x, y);
                                     textcolor(VERMELHO_CLARO); 
                                     cout << "  Matricula ja cadastrada, tente novamente!\n"; 
                                     textcolor(PADRAO);
