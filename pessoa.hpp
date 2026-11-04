@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <windows.h>
+#pragma execution_character_set("utf-8")
 using namespace std;
 #define PRETO 0
 #define AZUL_ESCURO 1
@@ -22,7 +23,7 @@ using namespace std;
 #define ROSA_MAGENTA 13
 #define AMARELO_CLARO 14
 #define BRANCO 15
-
+#pragma execution_character_set("utf-8")
 inline void textcolor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }

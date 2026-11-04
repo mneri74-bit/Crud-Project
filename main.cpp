@@ -11,6 +11,7 @@
 using namespace std;
 
 int main() {
+        SetConsoleOutputCP(CP_UTF8); 
     crud academia;
     char input = 0;
     while (input != '7') {

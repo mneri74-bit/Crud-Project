@@ -18,7 +18,6 @@
 using namespace std;
 
 
-
 int getcursor(bool eixo) {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hOut == INVALID_HANDLE_VALUE) return -1;
@@ -551,13 +550,14 @@ class crud{
     if (!(cin >> esc)) {
         cin.clear();
         cin.ignore(10000, '\n');
-        gotoxy(0,a+ 2);
+        gotoxy(0,a+ 5);
         return -1;}
     cin.ignore(10000, '\n');
     if (esc < 1 || esc > (int)achados.size()) {
         gotoxy(0, a + 2);
         return -1;
     }
+    gotoxy(0, a+1);
     return achados[esc-1];
 }
         
